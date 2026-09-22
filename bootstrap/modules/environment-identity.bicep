@@ -11,11 +11,8 @@ param identityName string
 @description('Azure region.')
 param location string
 
-@description('GitHub repository owner.')
-param githubOwner string
-
-@description('GitHub repository name.')
-param githubRepository string
+@description('GitHub OIDC subject prefix for this repository.')
+param githubSubjectPrefix string
 
 @description('Resource tags.')
 param tags object = {}
@@ -45,7 +42,7 @@ resource deploymentIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@20
         'api://AzureADTokenExchange'
       ]
       issuer: 'https://token.actions.githubusercontent.com'
-      subject: 'repo:${githubOwner}/${githubRepository}:environment:${environmentName}'
+      subject: '${githubSubjectPrefix}:environment:${environmentName}'
     }
   }
 }

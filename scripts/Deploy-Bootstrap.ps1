@@ -6,6 +6,7 @@ param(
     [string]$DeploymentLocation = 'westus3',
     [string]$GitHubOwner = 'christopherhouse',
     [string]$GitHubRepository = 'Foundry-Deployment-Demo',
+    [string]$GitHubSubjectPrefix,
     [string]$ProdReviewerLogin = 'christopherhouse',
     [switch]$SkipGitHubConfiguration
 )
@@ -88,9 +89,43 @@ $prodFoundryAccountName = Get-BicepStringParameter -Path $prodParameters -Name '
 $devApimServiceName = Get-BicepStringParameter -Path $devParameters -Name 'apimServiceName'
 $prodApimServiceName = Get-BicepStringParameter -Path $prodParameters -Name 'apimServiceName'
 
+$githubRepositoryName = $null
+if (-not $GitHubSubjectPrefix -or -not $SkipGitHubConfiguration) {
+    Invoke-CheckedCommand `
+        -Command { gh auth status } `
+        -FailureMessage 'GitHub CLI authentication is required to resolve repository OIDC settings.' |
+        Out-Host
+
+    $githubRepositoryName = Invoke-CheckedCommand `
+        -Command { gh repo view $repository --json nameWithOwner --jq '.nameWithOwner' } `
+        -FailureMessage "Unable to access GitHub repository '$repository'."
+
+    if ($githubRepositoryName -ne $repository) {
+        throw "GitHub repository '$githubRepositoryName' does not match '$repository'."
+    }
+}
+
+if (-not $GitHubSubjectPrefix) {
+    $oidcCustomizationJson = Invoke-CheckedCommand `
+        -Command { gh api "repos/$repository/actions/oidc/customization/sub" } `
+        -FailureMessage "Unable to read GitHub OIDC subject settings for '$repository'."
+
+    $oidcCustomization = $oidcCustomizationJson | ConvertFrom-Json
+    if (-not [string]::IsNullOrWhiteSpace($oidcCustomization.sub_claim_prefix)) {
+        $GitHubSubjectPrefix = $oidcCustomization.sub_claim_prefix
+    }
+    elseif ($oidcCustomization.use_immutable_subject -eq $true) {
+        throw "GitHub reports immutable OIDC subjects for '$repository' without a subject prefix."
+    }
+    else {
+        $GitHubSubjectPrefix = "repo:$repository"
+    }
+}
+
 Write-Host "Subscription: $($account.name) ($($account.id))"
 Write-Host "Tenant:       $($account.tenantId)"
 Write-Host "Region:       $DeploymentLocation"
+Write-Host "OIDC subject: ${GitHubSubjectPrefix}:environment:<environment>"
 
 Invoke-CheckedCommand `
     -Command {
@@ -100,8 +135,7 @@ Invoke-CheckedCommand `
             --template-file $bootstrapTemplate `
             --parameters $bootstrapParameters `
             --parameters location=$DeploymentLocation `
-            --parameters githubOwner=$GitHubOwner `
-            --parameters githubRepository=$GitHubRepository `
+            --parameters githubSubjectPrefix=$GitHubSubjectPrefix `
             --no-pretty-print
     } `
     -FailureMessage 'Bootstrap what-if failed.' | Out-Host
@@ -118,8 +152,7 @@ Invoke-CheckedCommand `
             --template-file $bootstrapTemplate `
             --parameters $bootstrapParameters `
             --parameters location=$DeploymentLocation `
-            --parameters githubOwner=$GitHubOwner `
-            --parameters githubRepository=$GitHubRepository `
+            --parameters githubSubjectPrefix=$GitHubSubjectPrefix `
             --output none
     } `
     -FailureMessage 'Bootstrap deployment failed.' |
@@ -146,19 +179,6 @@ if ($deploymentOutputs.prodResourceGroupName.value -ne $prodResourceGroupName) {
 }
 
 if (-not $SkipGitHubConfiguration) {
-    Invoke-CheckedCommand `
-        -Command { gh auth status } `
-        -FailureMessage 'GitHub CLI authentication is required to configure repository environments.' |
-        Out-Host
-
-    $githubRepositoryName = Invoke-CheckedCommand `
-        -Command { gh repo view $repository --json nameWithOwner --jq '.nameWithOwner' } `
-        -FailureMessage "Unable to access GitHub repository '$repository'."
-
-    if ($githubRepositoryName -ne $repository) {
-        throw "GitHub repository '$githubRepositoryName' does not match '$repository'."
-    }
-
     gh variable get ENABLE_AUTOMATIC_RELEASE --repo $repository *> $null
     if ($LASTEXITCODE -ne 0) {
         Invoke-CheckedCommand `

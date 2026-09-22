@@ -15,11 +15,8 @@ param devIdentityName string
 @description('Production GitHub Actions user-assigned managed identity name.')
 param prodIdentityName string
 
-@description('GitHub repository owner.')
-param githubOwner string
-
-@description('GitHub repository name.')
-param githubRepository string
+@description('GitHub OIDC subject prefix returned by the repository OIDC customization API.')
+param githubSubjectPrefix string
 
 @description('Tags applied to bootstrap resources.')
 param tags object = {}
@@ -49,8 +46,7 @@ module devEnvironment './modules/environment-identity.bicep' = {
   scope: devResourceGroup
   params: {
     environmentName: 'dev'
-    githubOwner: githubOwner
-    githubRepository: githubRepository
+    githubSubjectPrefix: githubSubjectPrefix
     identityName: devIdentityName
     location: location
     tags: tags
@@ -62,8 +58,7 @@ module prodEnvironment './modules/environment-identity.bicep' = {
   scope: prodResourceGroup
   params: {
     environmentName: 'prod'
-    githubOwner: githubOwner
-    githubRepository: githubRepository
+    githubSubjectPrefix: githubSubjectPrefix
     identityName: prodIdentityName
     location: location
     tags: tags
@@ -80,4 +75,3 @@ output prodResourceGroupId string = prodResourceGroup.id
 output prodIdentityName string = prodEnvironment.outputs.identityName
 output prodIdentityClientId string = prodEnvironment.outputs.clientId
 output prodIdentityPrincipalId string = prodEnvironment.outputs.principalId
-
