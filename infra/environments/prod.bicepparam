@@ -1,7 +1,7 @@
 using '../main.bicep'
 
 param environmentName = 'prod'
-param location = 'eastus2'
+param location = 'westus3'
 param resourceGroupName = 'rg-foundrydeploydemo-prod'
 param foundryAccountName = 'foundrydeploydemo-prod-ch'
 param foundryProjectName = 'foundry-demo-prod'
@@ -32,4 +32,3 @@ param tags = {
   Environment: 'prod'
   Workload: 'AI'
 }
-

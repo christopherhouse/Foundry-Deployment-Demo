@@ -20,6 +20,7 @@ permissions:
 
 jobs:
   release-dev:
+    if: github.event_name == 'workflow_dispatch' || vars.ENABLE_AUTOMATIC_RELEASE == 'true'
     runs-on: ubuntu-latest
     environment: dev
     concurrency:
@@ -46,12 +47,10 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy dev infrastructure
-        env:
-          DEPLOYMENT_LOCATION: ${{ vars.DEPLOYMENT_LOCATION }}
         run: |
-          az deployment sub create \
+          az deployment group create \
             --name "foundry-demo-dev-${GITHUB_RUN_ID}" \
-            --location "${DEPLOYMENT_LOCATION:-eastus2}" \
+            --resource-group "${{ vars.APIM_RESOURCE_GROUP }}" \
             --template-file ./infra/main.bicep \
             --parameters ./infra/environments/dev.bicepparam
 
@@ -83,6 +82,7 @@ jobs:
             -ApimServiceName "${{ vars.APIM_SERVICE_NAME }}"
 
   release-prod:
+    if: needs.release-dev.result == 'success'
     needs: release-dev
     runs-on: ubuntu-latest
     environment: prod
@@ -110,12 +110,10 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy prod infrastructure
-        env:
-          DEPLOYMENT_LOCATION: ${{ vars.DEPLOYMENT_LOCATION }}
         run: |
-          az deployment sub create \
+          az deployment group create \
             --name "foundry-demo-prod-${GITHUB_RUN_ID}" \
-            --location "${DEPLOYMENT_LOCATION:-eastus2}" \
+            --resource-group "${{ vars.APIM_RESOURCE_GROUP }}" \
             --template-file ./infra/main.bicep \
             --parameters ./infra/environments/prod.bicepparam
 
@@ -145,4 +143,3 @@ jobs:
             -ResourceGroupName "${{ vars.APIM_RESOURCE_GROUP }}" `
             -FoundryAccountName "${{ vars.FOUNDRY_ACCOUNT_NAME }}" `
             -ApimServiceName "${{ vars.APIM_SERVICE_NAME }}"
-

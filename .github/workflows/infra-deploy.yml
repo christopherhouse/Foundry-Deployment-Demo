@@ -37,22 +37,18 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Validate deployment
-        env:
-          DEPLOYMENT_LOCATION: ${{ vars.DEPLOYMENT_LOCATION }}
         run: |
-          az deployment sub validate \
+          az deployment group validate \
             --name "foundry-demo-dev-${GITHUB_RUN_ID}" \
-            --location "${DEPLOYMENT_LOCATION:-eastus2}" \
+            --resource-group "${{ vars.APIM_RESOURCE_GROUP }}" \
             --template-file ./infra/main.bicep \
             --parameters ./infra/environments/dev.bicepparam
 
       - name: Deploy dev
-        env:
-          DEPLOYMENT_LOCATION: ${{ vars.DEPLOYMENT_LOCATION }}
         run: |
-          az deployment sub create \
+          az deployment group create \
             --name "foundry-demo-dev-${GITHUB_RUN_ID}" \
-            --location "${DEPLOYMENT_LOCATION:-eastus2}" \
+            --resource-group "${{ vars.APIM_RESOURCE_GROUP }}" \
             --template-file ./infra/main.bicep \
             --parameters ./infra/environments/dev.bicepparam
 
@@ -79,21 +75,17 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Validate deployment
-        env:
-          DEPLOYMENT_LOCATION: ${{ vars.DEPLOYMENT_LOCATION }}
         run: |
-          az deployment sub validate \
+          az deployment group validate \
             --name "foundry-demo-prod-${GITHUB_RUN_ID}" \
-            --location "${DEPLOYMENT_LOCATION:-eastus2}" \
+            --resource-group "${{ vars.APIM_RESOURCE_GROUP }}" \
             --template-file ./infra/main.bicep \
             --parameters ./infra/environments/prod.bicepparam
 
       - name: Deploy prod
-        env:
-          DEPLOYMENT_LOCATION: ${{ vars.DEPLOYMENT_LOCATION }}
         run: |
-          az deployment sub create \
+          az deployment group create \
             --name "foundry-demo-prod-${GITHUB_RUN_ID}" \
-            --location "${DEPLOYMENT_LOCATION:-eastus2}" \
+            --resource-group "${{ vars.APIM_RESOURCE_GROUP }}" \
             --template-file ./infra/main.bicep \
             --parameters ./infra/environments/prod.bicepparam

@@ -25,7 +25,9 @@ This repository is a two-environment Microsoft Foundry and Azure API Management 
 ## Architecture invariants
 
 - Use Bicep for Azure infrastructure.
-- `infra/main.bicep` is subscription-scoped and each `.bicepparam` deploys one environment.
+- `bootstrap/main.bicep` is subscription-scoped and owns environment resource groups, GitHub OIDC user-assigned managed identities, federated credentials, and deployment-identity RBAC.
+- `infra/main.bicep` is resource-group-scoped and each `.bicepparam` deploys one environment into a resource group created by bootstrap.
+- GitHub deployment identities receive `Contributor` and `User Access Administrator` only at their environment resource-group scope.
 - Do not add VNets, private endpoints, or private DNS unless the project scope explicitly changes.
 - Foundry model deployments must remain data-driven through the `modelDeployments` parameter array.
 - Bicep owns resource groups, Foundry resources/projects/deployments, APIM service instances, managed identities, and RBAC.
