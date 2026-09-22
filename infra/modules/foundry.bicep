@@ -46,6 +46,7 @@ resource foundry 'Microsoft.CognitiveServices/accounts@2025-06-01' = {
     }
   }
 
+  @batchSize(1)
   resource deployments 'deployments' = [for deployment in modelDeployments: {
     name: deployment.name
     sku: {
@@ -60,6 +61,9 @@ resource foundry 'Microsoft.CognitiveServices/accounts@2025-06-01' = {
       }
       versionUpgradeOption: deployment.versionUpgradeOption
     }
+    dependsOn: [
+      project
+    ]
   }]
 }
 

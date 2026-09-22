@@ -37,6 +37,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | 2026-09-22 | Use Data Zone Standard for three recent chat models and one embedding model | West US 3 catalog confirms GA support for GPT-6 Astra, GPT-5.6 Sol, GPT-5.6 Luna, and text-embedding-3-large |
 | 2026-09-22 | Discover the GitHub OIDC subject prefix from the repository API | Immutable GitHub subjects include owner and repository IDs and must exactly match Azure federated credentials |
 | 2026-09-22 | Register workload resource providers during bootstrap | RG-scoped deployment identities cannot register subscription providers during the release |
+| 2026-09-22 | Serialize Foundry project and model child-resource writes | The Cognitive Services control plane rejects concurrent mutations of the same Foundry account |
 
 ## Risks
 
