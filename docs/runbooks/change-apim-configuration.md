@@ -48,6 +48,44 @@ $response.Headers['X-Foundry-Remaining-Quota-Tokens']
 
 Exceeding `tokens-per-minute` returns `429`; exceeding the daily `token-quota` returns `403`.
 
+The call above intentionally uses a tiny budget because it only checks the throttling headers. It returns `200` with an empty `content` string, which is expected — see [Reasoning models and `max_completion_tokens`](#reasoning-models-and-max_completion_tokens).
+
+## Reasoning models and `max_completion_tokens`
+
+The deployed chat models are reasoning models. Reasoning tokens are drawn from `max_completion_tokens` *before* any visible text is produced, so an undersized budget returns `200` with `finish_reason: "length"` and an empty `content` string.
+
+```text
+max_completion_tokens=1000                    -> finish=length, 0 chars,    1000 reasoning tokens
+max_completion_tokens=4000                    -> finish=stop,   5466 chars, 1867 reasoning tokens
+max_completion_tokens=4000, effort=low        -> finish=stop,   5334 chars,  138 reasoning tokens
+```
+
+When you want visible output, budget roughly four times the text you expect, or pin the effort:
+
+```json
+{
+  "model": "gpt-5-6-sol",
+  "messages": [{ "role": "user", "content": "Write a 700 word essay about Azure API Management." }],
+  "max_completion_tokens": 4000,
+  "reasoning_effort": "low"
+}
+```
+
+Reasoning tokens count toward `llm-token-limit` consumption and are reported separately as the `Completion Reasoning Tokens` metric, so throttling and metrics stay accurate either way.
+
+## Demonstrate throttling in the test console
+
+In the APIM test console, pick a tier subscription (`foundry-bronze-demo`, `foundry-silver-demo`, or `foundry-gold-demo`) rather than the default all-APIs master key. The master key bypasses product scope, so no tier policy runs.
+
+The request above consumes roughly 3,300 tokens, which exceeds the bronze 1,000 tokens-per-minute ceiling. Sending it twice on the bronze key produces:
+
+```text
+call 1 -> HTTP 200  consumed=3342  remainingTPM=0
+call 2 -> HTTP 429  {"statusCode":429,"message":"Token limit is exceeded. Try again in 59 seconds."}
+```
+
+The same request on the gold key succeeds repeatedly, because gold allows 20,000 tokens per minute.
+
 ## Inspect token metrics
 
 Token consumption is emitted by `llm-emit-token-metric` in the Foundry API policy and lands in the environment's Application Insights component. Query the workspace:
