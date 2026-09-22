@@ -1,0 +1,11 @@
+{
+  "properties": {
+    "approvalRequired": false,
+    "description": "Demo product for Microsoft Foundry model APIs.",
+    "displayName": "Foundry Demo",
+    "state": "published",
+    "subscriptionRequired": true,
+    "terms": "For demonstration use only."
+  }
+}
+

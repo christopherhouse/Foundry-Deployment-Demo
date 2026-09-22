@@ -1,0 +1,16 @@
+{
+  "name": "foundry-deployment-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Microsoft Foundry and Azure API Management deployment demo",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "apiops:version": "apiops --version"
+  },
+  "dependencies": {
+    "@azure-tools/apiops-cli": "1.0.3"
+  }
+}
+

@@ -1,0 +1,8 @@
+{
+  "properties": {
+    "displayName": "foundry-rate-limit-calls",
+    "secret": false,
+    "value": "30"
+  }
+}
+

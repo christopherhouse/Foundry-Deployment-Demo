@@ -1,0 +1,41 @@
+name: Validate APIOps artifacts
+
+on:
+  pull_request:
+    paths:
+      - 'apim-artifacts/**'
+      - 'apiops/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/apiops-*.yml'
+      - 'scripts/Test-ApiOpsArtifacts.ps1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Verify APIOps version
+        run: |
+          version="$(npx apiops --version)"
+          test "$version" = "1.0.3"
+
+      - name: Validate artifacts
+        shell: pwsh
+        run: ./scripts/Test-ApiOpsArtifacts.ps1
+

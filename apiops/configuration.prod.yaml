@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/apiops-cli/main/schemas/v1/override-config.schema.json
+backends:
+  - name: foundry-backend
+    properties:
+      url: "https://foundrydeploydemo-prod-ch.openai.azure.com/openai/v1"
+
+namedValues:
+  - name: foundry-rate-limit-calls
+    properties:
+      value: "60"
+

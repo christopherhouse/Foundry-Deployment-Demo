@@ -1,0 +1,38 @@
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Node and APIOps
+node_modules/
+npm-debug.log*
+*.tgz
+.npm/
+
+# Azure and Bicep
+.azure/
+*.bicep.json
+*.bicepparam.json
+what-if*.json
+deployment-outputs*.json
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.local
+*.secret.*
+secrets/
+
+# Test and temporary output
+artifacts/
+coverage/
+test-results/
+tmp/
+temp/
+*.tmp
+*.log
+

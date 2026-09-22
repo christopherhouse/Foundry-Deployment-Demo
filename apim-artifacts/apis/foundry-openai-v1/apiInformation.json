@@ -1,0 +1,13 @@
+{
+  "properties": {
+    "apiType": "http",
+    "description": "OpenAI v1-compatible proxy for Microsoft Foundry model deployments.",
+    "displayName": "Microsoft Foundry OpenAI v1",
+    "path": "openai/v1",
+    "protocols": [
+      "https"
+    ],
+    "subscriptionRequired": true
+  }
+}
+

@@ -1,0 +1,28 @@
+name: Validate infrastructure
+
+on:
+  pull_request:
+    paths:
+      - 'infra/**'
+      - 'bicepconfig.json'
+      - '.github/workflows/infra-*.yml'
+      - 'scripts/Test-Repository.ps1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Build Bicep
+        shell: pwsh
+        run: |
+          az bicep build --file ./infra/main.bicep --stdout | Out-Null
+          az bicep build-params --file ./infra/environments/dev.bicepparam --stdout | Out-Null
+          az bicep build-params --file ./infra/environments/prod.bicepparam --stdout | Out-Null
+

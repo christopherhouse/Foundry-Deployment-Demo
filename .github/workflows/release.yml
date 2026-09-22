@@ -1,0 +1,148 @@
+name: Release dev and prod
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/**'
+      - 'apim-artifacts/**'
+      - 'apiops/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'bicepconfig.json'
+      - '.github/workflows/release.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  release-dev:
+    runs-on: ubuntu-latest
+    environment: dev
+    concurrency:
+      group: release-dev
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Azure login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy dev infrastructure
+        env:
+          DEPLOYMENT_LOCATION: ${{ vars.DEPLOYMENT_LOCATION }}
+        run: |
+          az deployment sub create \
+            --name "foundry-demo-dev-${GITHUB_RUN_ID}" \
+            --location "${DEPLOYMENT_LOCATION:-eastus2}" \
+            --template-file ./infra/main.bicep \
+            --parameters ./infra/environments/dev.bicepparam
+
+      - name: Dry run dev APIOps
+        run: |
+          npx apiops publish \
+            --subscription-id "${{ vars.AZURE_SUBSCRIPTION_ID }}" \
+            --resource-group "${{ vars.APIM_RESOURCE_GROUP }}" \
+            --service-name "${{ vars.APIM_SERVICE_NAME }}" \
+            --source ./apim-artifacts \
+            --overrides ./apiops/configuration.dev.yaml \
+            --dry-run
+
+      - name: Publish dev APIOps
+        run: |
+          npx apiops publish \
+            --subscription-id "${{ vars.AZURE_SUBSCRIPTION_ID }}" \
+            --resource-group "${{ vars.APIM_RESOURCE_GROUP }}" \
+            --service-name "${{ vars.APIM_SERVICE_NAME }}" \
+            --source ./apim-artifacts \
+            --overrides ./apiops/configuration.dev.yaml
+
+      - name: Verify dev resources
+        shell: pwsh
+        run: |
+          ./scripts/Test-DeployedEnvironment.ps1 `
+            -ResourceGroupName "${{ vars.APIM_RESOURCE_GROUP }}" `
+            -FoundryAccountName "${{ vars.FOUNDRY_ACCOUNT_NAME }}" `
+            -ApimServiceName "${{ vars.APIM_SERVICE_NAME }}"
+
+  release-prod:
+    needs: release-dev
+    runs-on: ubuntu-latest
+    environment: prod
+    concurrency:
+      group: release-prod
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Azure login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy prod infrastructure
+        env:
+          DEPLOYMENT_LOCATION: ${{ vars.DEPLOYMENT_LOCATION }}
+        run: |
+          az deployment sub create \
+            --name "foundry-demo-prod-${GITHUB_RUN_ID}" \
+            --location "${DEPLOYMENT_LOCATION:-eastus2}" \
+            --template-file ./infra/main.bicep \
+            --parameters ./infra/environments/prod.bicepparam
+
+      - name: Dry run prod APIOps
+        run: |
+          npx apiops publish \
+            --subscription-id "${{ vars.AZURE_SUBSCRIPTION_ID }}" \
+            --resource-group "${{ vars.APIM_RESOURCE_GROUP }}" \
+            --service-name "${{ vars.APIM_SERVICE_NAME }}" \
+            --source ./apim-artifacts \
+            --overrides ./apiops/configuration.prod.yaml \
+            --dry-run
+
+      - name: Publish prod APIOps
+        run: |
+          npx apiops publish \
+            --subscription-id "${{ vars.AZURE_SUBSCRIPTION_ID }}" \
+            --resource-group "${{ vars.APIM_RESOURCE_GROUP }}" \
+            --service-name "${{ vars.APIM_SERVICE_NAME }}" \
+            --source ./apim-artifacts \
+            --overrides ./apiops/configuration.prod.yaml
+
+      - name: Verify prod resources
+        shell: pwsh
+        run: |
+          ./scripts/Test-DeployedEnvironment.ps1 `
+            -ResourceGroupName "${{ vars.APIM_RESOURCE_GROUP }}" `
+            -FoundryAccountName "${{ vars.FOUNDRY_ACCOUNT_NAME }}" `
+            -ApimServiceName "${{ vars.APIM_SERVICE_NAME }}"
+

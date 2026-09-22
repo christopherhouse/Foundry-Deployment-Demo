@@ -1,0 +1,8 @@
+{
+  "properties": {
+    "displayName": "foundry-api-audience",
+    "secret": false,
+    "value": "https://cognitiveservices.azure.com"
+  }
+}
+

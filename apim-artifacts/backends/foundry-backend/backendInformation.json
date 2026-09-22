@@ -1,0 +1,9 @@
+{
+  "properties": {
+    "description": "Microsoft Foundry OpenAI v1 backend. URL is overridden per environment.",
+    "protocol": "http",
+    "title": "Microsoft Foundry",
+    "url": "https://replace-me.openai.azure.com/openai/v1"
+  }
+}
+
