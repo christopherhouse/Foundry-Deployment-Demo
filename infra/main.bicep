@@ -48,8 +48,10 @@ param modelDeployments ModelDeployment[] = []
 @description('Tags applied to deployed resources.')
 param tags object = {}
 
+var moduleDeploymentSuffix = uniqueString(deployment().name)
+
 module foundry './modules/foundry.bicep' = {
-  name: 'foundry-${environmentName}'
+  name: 'foundry-${environmentName}-${moduleDeploymentSuffix}'
   params: {
     accountName: foundryAccountName
     projectName: foundryProjectName
@@ -60,7 +62,7 @@ module foundry './modules/foundry.bicep' = {
 }
 
 module apim './modules/apim.bicep' = {
-  name: 'apim-${environmentName}'
+  name: 'apim-${environmentName}-${moduleDeploymentSuffix}'
   params: {
     serviceName: apimServiceName
     location: location
@@ -71,7 +73,7 @@ module apim './modules/apim.bicep' = {
 }
 
 module foundryAccess './modules/role-assignments.bicep' = {
-  name: 'foundry-access-${environmentName}'
+  name: 'foundry-access-${environmentName}-${moduleDeploymentSuffix}'
   dependsOn: [
     foundry
   ]

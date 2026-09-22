@@ -46,6 +46,13 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Wait for prior dev APIM operation
+        shell: pwsh
+        run: |
+          ./scripts/Wait-ApimReady.ps1 `
+            -ResourceGroupName "${{ vars.APIM_RESOURCE_GROUP }}" `
+            -ApimServiceName "${{ vars.APIM_SERVICE_NAME }}"
+
       - name: Deploy dev infrastructure
         run: |
           az deployment group create \
@@ -108,6 +115,13 @@ jobs:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Wait for prior prod APIM operation
+        shell: pwsh
+        run: |
+          ./scripts/Wait-ApimReady.ps1 `
+            -ResourceGroupName "${{ vars.APIM_RESOURCE_GROUP }}" `
+            -ApimServiceName "${{ vars.APIM_SERVICE_NAME }}"
 
       - name: Deploy prod infrastructure
         run: |
