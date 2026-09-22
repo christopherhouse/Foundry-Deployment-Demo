@@ -8,6 +8,9 @@ param foundryProjectName = 'foundry-demo-dev'
 param apimServiceName = 'apim-foundrydeploydemo-dev-ch'
 param apimPublisherName = 'Foundry Deployment Demo'
 param apimPublisherEmail = 'replace-me@example.com'
+param logAnalyticsWorkspaceName = 'log-foundrydeploydemo-dev'
+param applicationInsightsName = 'appi-foundrydeploydemo-dev'
+param logAnalyticsRetentionInDays = 30
 
 // DataZoneStandard capacity is expressed in thousands of tokens per minute.
 // Model versions and SKU support were verified in West US 3 on 2026-09-22.

@@ -21,8 +21,11 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | P8.1 | Demo | Bootstrap Azure/GitHub foundation | P7.1 | Done | WU3 RGs, OIDC identities, scoped RBAC, environment variables, and prod approval are configured |
 | P8.2 | Demo | Configure workload-specific values | P8.1 | Done | West US 3 model version/SKU/capacity values and subscription quota are confirmed by the successful dev deployment |
 | P8.3 | Demo | Deploy dev infrastructure and APIOps baseline | P8.2 | Done | Dev infrastructure and the 106-operation v1 APIOps contract are published; `/models`, `/responses`, and `/embeddings` smoke tests pass |
-| P8.4 | Demo | Approve and deploy prod | P8.3 | Not started | Prod smoke tests pass |
+| P8.4 | Demo | Approve and deploy prod | P8.3 | In progress | Prod smoke tests pass |
 | P8.5 | Demo | Demonstrate model and APIM change CD | P8.4 | Not started | Both change paths and rollback are demonstrated |
+| P9.1 | Governance | Add Log Analytics and Application Insights with APIM diagnostics | P8.3 | Done | Each environment has a dedicated workspace and component, and the APIM diagnostic has `metrics: true` |
+| P9.2 | Governance | Add bronze/silver/gold products with tiered token limits | P9.1 | Done | Each product publishes the Foundry API and enforces its own `llm-token-limit` rate limit and daily quota |
+| P9.3 | Governance | Emit token metrics from the Foundry API policy | P9.1 | Done | `llm-emit-token-metric` reports token consumption with API, operation, product, and subscription dimensions |
 
 ## Decision log
 
@@ -41,6 +44,10 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | 2026-09-22 | Use unique nested deployment names and wait for APIM readiness | Canceled parent runs can leave long-running APIM module deployments active and block retries that reuse a static name |
 | 2026-09-22 | Generate the APIM contract from the official Azure OpenAI v1 specification | The upstream contract is OpenAPI 3.2, so generation preserves all operations while downgrading to APIM-compatible OpenAPI 3.0.3 with permissive payload schemas |
 | 2026-09-22 | Clear the Azure CLI exit code when APIM does not exist | A missing APIM service is the expected first-deployment state and must not fail the readiness step |
+| 2026-09-22 | Let Bicep own the APIM Application Insights logger and diagnostic | The logger needs the component connection string; Bicep reads it in-template so no secret is committed, and the extractor filter keeps `loggers`/`diagnostics` out of APIOps |
+| 2026-09-22 | Enforce token budgets with product-scope `llm-token-limit` and tier named values | Tier changes stay an APIOps-only change, and a per-tier `counter-key` prefix keeps the three counters independent |
+| 2026-09-22 | Emit token metrics once at API scope instead of per product | A single `llm-emit-token-metric` with a `Product ID` dimension attributes consumption per tier without duplicating policy |
+| 2026-09-22 | Re-authenticate to Azure after the infrastructure deployment step | Creating APIM can exceed the lifetime of the OIDC-derived Azure CLI token that the APIOps CLI reuses through `DefaultAzureCredential` |
 
 ## Risks
 

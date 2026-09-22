@@ -16,3 +16,50 @@ The Foundry API specification is generated from Microsoft's official Azure OpenA
 ```
 
 The generator pins the upstream `azure-rest-api-specs` commit and converts its OpenAPI 3.2 operation catalog to an APIM-compatible OpenAPI 3.0.3 document. Keep the generated request and response schemas permissive; APIM is the proxy/configuration boundary, while the official OpenAI client models remain the authoritative payload contract.
+
+## Change a product tier's token budget
+
+Tier limits are named values, so a tier change never touches Bicep.
+
+1. Edit the base value in `apim-artifacts/namedValues/tier-<tier>-tokens-per-minute/namedValueInformation.json` or `tier-<tier>-token-quota/`.
+2. Edit the matching entries in `apiops/configuration.dev.yaml` and `apiops/configuration.prod.yaml`. Both overrides must keep bronze < silver < gold; `Test-ApiOpsArtifacts.ps1` enforces this.
+3. Run `.\scripts\Test-ApiOpsArtifacts.ps1`, then open a pull request.
+
+To confirm enforcement after publish, create a subscription scoped to the product and read the response headers:
+
+```powershell
+$key = .\scripts\New-TierSubscription.ps1 `
+  -ResourceGroupName rg-foundrydeploydemo-dev `
+  -ApimServiceName apim-foundrydeploydemo-dev-ch `
+  -Tier gold
+
+$response = Invoke-WebRequest `
+  -Uri 'https://<apim>.azure-api.net/openai/v1/chat/completions' `
+  -Method Post `
+  -Headers @{ 'Ocp-Apim-Subscription-Key' = $key; 'Content-Type' = 'application/json' } `
+  -Body '{"model":"gpt-5-6-sol","messages":[{"role":"user","content":"Say OK"}],"max_completion_tokens":16}' `
+  -UseBasicParsing
+
+$response.Headers['X-Foundry-Tier']
+$response.Headers['X-Foundry-Tokens-Consumed']
+$response.Headers['X-Foundry-Remaining-Tokens']
+$response.Headers['X-Foundry-Remaining-Quota-Tokens']
+```
+
+Exceeding `tokens-per-minute` returns `429`; exceeding the daily `token-quota` returns `403`.
+
+## Inspect token metrics
+
+Token consumption is emitted by `llm-emit-token-metric` in the Foundry API policy and lands in the environment's Application Insights component. Query the workspace:
+
+```kusto
+AppMetrics
+| where Name in ("Total Tokens", "Prompt Tokens", "Completion Tokens")
+| extend Product = tostring(Properties["Product ID"]), Operation = tostring(Properties["Operation ID"])
+| summarize Tokens = sum(Sum) by Name, Product, Operation, bin(TimeGenerated, 5m)
+| order by TimeGenerated desc
+```
+
+APIM emits one metric per token category reported by the model, including `Total Tokens`, `Prompt Tokens`, `Completion Tokens`, `Prompt Cached Tokens`, and `Completion Reasoning Tokens`. Every metric carries the `API ID`, `Operation ID`, `Product ID`, and `Subscription ID` dimensions.
+
+Custom metric ingestion lags request telemetry by several minutes. To split Azure Monitor metric charts by dimension, set **Usage and estimated costs** > **Custom metrics (Preview)** to **With dimensions** on the Application Insights component once per environment; Azure exposes no supported ARM property for this preview setting.

@@ -1,0 +1,10 @@
+{
+  "properties": {
+    "approvalRequired": false,
+    "description": "Entry tier for the Microsoft Foundry API. Lowest token rate limit and daily token quota.",
+    "displayName": "Foundry Bronze",
+    "state": "published",
+    "subscriptionRequired": true,
+    "terms": "For demonstration use only."
+  }
+}
