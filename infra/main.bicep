@@ -1,4 +1,4 @@
-targetScope = 'subscription'
+targetScope = 'resourceGroup'
 
 type ModelDeployment = {
   name: string
@@ -48,18 +48,8 @@ param modelDeployments ModelDeployment[] = []
 @description('Tags applied to deployed resources.')
 param tags object = {}
 
-resource environmentResourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
-  name: resourceGroupName
-  location: location
-  tags: union(tags, {
-    Environment: environmentName
-    ManagedBy: 'Bicep'
-  })
-}
-
 module foundry './modules/foundry.bicep' = {
   name: 'foundry-${environmentName}'
-  scope: environmentResourceGroup
   params: {
     accountName: foundryAccountName
     projectName: foundryProjectName
@@ -71,7 +61,6 @@ module foundry './modules/foundry.bicep' = {
 
 module apim './modules/apim.bicep' = {
   name: 'apim-${environmentName}'
-  scope: environmentResourceGroup
   params: {
     serviceName: apimServiceName
     location: location
@@ -83,7 +72,6 @@ module apim './modules/apim.bicep' = {
 
 module foundryAccess './modules/role-assignments.bicep' = {
   name: 'foundry-access-${environmentName}'
-  scope: environmentResourceGroup
   dependsOn: [
     foundry
   ]
@@ -93,7 +81,8 @@ module foundryAccess './modules/role-assignments.bicep' = {
   }
 }
 
-output resourceGroupId string = environmentResourceGroup.id
+output configuredResourceGroupName string = resourceGroupName
+output resourceGroupId string = resourceGroup().id
 output foundryAccountId string = foundry.outputs.accountId
 output foundryEndpoint string = foundry.outputs.endpoint
 output foundryOpenAiEndpoint string = foundry.outputs.openAiEndpoint

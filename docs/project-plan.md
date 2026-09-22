@@ -18,10 +18,11 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | P6.1 | CI/CD | Add infrastructure validation and deployment workflows | P3.3, P5.1 | Done | Dev deploy and approval-gated prod promotion exist |
 | P6.2 | CI/CD | Add APIOps validation and publishing workflows | P4.3, P5.1 | Done | Dry-run, dev publish, and prod promotion exist |
 | P7.1 | Quality | Add local validation and smoke-test scripts | P6.1, P6.2 | Done | Repository and deployed environment checks are repeatable |
-| P8.1 | Demo | Configure exact Azure/GitHub values | P7.1 | Not started | OIDC, variables, names, and publisher metadata are configured |
-| P8.2 | Demo | Deploy dev infrastructure and APIOps baseline | P8.1 | Not started | Dev smoke tests pass |
-| P8.3 | Demo | Approve and deploy prod | P8.2 | Not started | Prod smoke tests pass |
-| P8.4 | Demo | Demonstrate model and APIM change CD | P8.3 | Not started | Both change paths and rollback are demonstrated |
+| P8.1 | Demo | Bootstrap Azure/GitHub foundation | P7.1 | Done | WU3 RGs, OIDC identities, scoped RBAC, environment variables, and prod approval are configured |
+| P8.2 | Demo | Configure workload-specific values | P8.1 | Not started | Publisher metadata, globally unique names, model version/SKU/capacity, and quota are confirmed |
+| P8.3 | Demo | Deploy dev infrastructure and APIOps baseline | P8.2 | Not started | Dev smoke tests pass |
+| P8.4 | Demo | Approve and deploy prod | P8.3 | Not started | Prod smoke tests pass |
+| P8.5 | Demo | Demonstrate model and APIM change CD | P8.4 | Not started | Both change paths and rollback are demonstrated |
 
 ## Decision log
 
@@ -32,6 +33,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | 2026-09-22 | Use APIOps CLI 1.0.3 | Current official package version reviewed during scaffold |
 | 2026-09-22 | Use separate Developer APIM instances | Clear environment isolation for a cost-conscious demo |
 | 2026-09-22 | Promote the same commit through protected environments | Auditable, repeatable dev-to-prod flow |
+| 2026-09-22 | Use WU3 UAMIs for GitHub OIDC | Keeps federation and RBAC in ARM/Bicep and scopes deployment permissions to each environment RG |
 
 ## Risks
 
@@ -42,4 +44,3 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | Global resource name collision | Edit names before deployment and keep APIOps overrides aligned |
 | RBAC propagation delay | Retry smoke tests after role assignments settle |
 | APIOps format/version changes | Pin version and upgrade only through a reviewed PR |
-

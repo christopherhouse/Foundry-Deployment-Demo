@@ -6,6 +6,16 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 Push-Location $repoRoot
 
 try {
+    az bicep build --file .\bootstrap\main.bicep --stdout | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Bootstrap Bicep build failed.'
+    }
+
+    az bicep build-params --file .\bootstrap\main.bicepparam --stdout | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Bootstrap Bicep parameter build failed.'
+    }
+
     az bicep build --file .\infra\main.bicep --stdout | Out-Null
     if ($LASTEXITCODE -ne 0) {
         throw 'Bicep build failed.'
@@ -40,4 +50,3 @@ try {
 finally {
     Pop-Location
 }
-

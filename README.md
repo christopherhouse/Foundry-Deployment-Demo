@@ -7,6 +7,10 @@ This repository demonstrates two independent continuous-delivery paths:
 
 The demo uses one Azure subscription, separate `dev` and `prod` resource groups, public endpoints, and separate APIM Developer SKU instances. Developer SKU is intentionally demo-only and has no production SLA.
 
+Bootstrap Bicep creates the two West US 3 resource groups and one GitHub OIDC user-assigned managed identity per environment. Each identity receives `Contributor` and `User Access Administrator` only on its own resource group.
+
+Automatic merge-driven releases are gated by repository variable `ENABLE_AUTOMATIC_RELEASE`. Bootstrap initializes it to `false`; enable it only after workload-specific values and model quota are ready.
+
 ## Architecture
 
 ```text
@@ -49,7 +53,7 @@ Push the branch and merge it through a pull request. After the merge, update loc
 1. Review and edit `infra/environments/dev.bicepparam` and `infra/environments/prod.bicepparam`.
 2. Add at least one model deployment by uncommenting the example object in each environment file and verify model availability and quota in the selected region.
 3. Run `.\scripts\Test-Repository.ps1`.
-4. Follow `docs/runbooks/bootstrap.md` to configure GitHub environments and Azure OIDC identities.
+4. Run `.\scripts\Deploy-Bootstrap.ps1` to create resource groups, OIDC identities, scoped RBAC, and GitHub environment variables.
 5. Merge the scaffold or run `.github/workflows/release.yml` to deploy infrastructure and publish APIM configuration in order.
 6. Use the dedicated infrastructure and APIOps workflows only for targeted manual recovery or demonstration steps.
 
