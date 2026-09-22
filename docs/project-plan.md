@@ -38,6 +38,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | 2026-09-22 | Discover the GitHub OIDC subject prefix from the repository API | Immutable GitHub subjects include owner and repository IDs and must exactly match Azure federated credentials |
 | 2026-09-22 | Register workload resource providers during bootstrap | RG-scoped deployment identities cannot register subscription providers during the release |
 | 2026-09-22 | Serialize Foundry project and model child-resource writes | The Cognitive Services control plane rejects concurrent mutations of the same Foundry account |
+| 2026-09-22 | Use unique nested deployment names and wait for APIM readiness | Canceled parent runs can leave long-running APIM module deployments active and block retries that reuse a static name |
 
 ## Risks
 
