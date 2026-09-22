@@ -40,6 +40,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | 2026-09-22 | Serialize Foundry project and model child-resource writes | The Cognitive Services control plane rejects concurrent mutations of the same Foundry account |
 | 2026-09-22 | Use unique nested deployment names and wait for APIM readiness | Canceled parent runs can leave long-running APIM module deployments active and block retries that reuse a static name |
 | 2026-09-22 | Generate the APIM contract from the official Azure OpenAI v1 specification | The upstream contract is OpenAPI 3.2, so generation preserves all operations while downgrading to APIM-compatible OpenAPI 3.0.3 with permissive payload schemas |
+| 2026-09-22 | Clear the Azure CLI exit code when APIM does not exist | A missing APIM service is the expected first-deployment state and must not fail the readiness step |
 
 ## Risks
 

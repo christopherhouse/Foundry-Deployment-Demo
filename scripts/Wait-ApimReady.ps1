@@ -27,6 +27,7 @@ while ($true) {
         $message = $output -join [Environment]::NewLine
         if ($message -match 'ResourceNotFound|could not be found') {
             Write-Host "APIM service '$ApimServiceName' does not exist yet."
+            $global:LASTEXITCODE = 0
             return
         }
 
