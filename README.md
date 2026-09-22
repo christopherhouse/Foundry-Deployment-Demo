@@ -34,6 +34,16 @@ Bicep owns resource groups, Foundry, model deployments, APIM service instances, 
 - GitHub CLI for optional environment/bootstrap automation
 - Permissions to create resource groups, Foundry resources, APIM, role assignments, app registrations, and federated credentials
 
+## Development workflow
+
+All implementation work uses a short-lived branch created from the latest `main`:
+
+- `feature/<name>` for new capabilities
+- `bugfix/<name>` for defect fixes
+- `chore/<name>` for maintenance, documentation, tooling, or configuration
+
+Push the branch and merge it through a pull request. After the merge, update local `main` with `git pull --ff-only origin main` before creating the next branch.
+
 ## Quick start
 
 1. Review and edit `infra/environments/dev.bicepparam` and `infra/environments/prod.bicepparam`.
