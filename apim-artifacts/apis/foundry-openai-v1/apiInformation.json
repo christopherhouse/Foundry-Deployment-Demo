@@ -1,7 +1,7 @@
 {
   "properties": {
     "apiType": "http",
-    "description": "OpenAI v1-compatible proxy for Microsoft Foundry model deployments.",
+    "description": "Azure OpenAI v1 proxy generated from the official Microsoft Foundry operation catalog.",
     "displayName": "Microsoft Foundry OpenAI v1",
     "path": "openai/v1",
     "protocols": [
@@ -10,4 +10,3 @@
     "subscriptionRequired": true
   }
 }
-

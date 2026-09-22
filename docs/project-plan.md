@@ -20,7 +20,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | P7.1 | Quality | Add local validation and smoke-test scripts | P6.1, P6.2 | Done | Repository and deployed environment checks are repeatable |
 | P8.1 | Demo | Bootstrap Azure/GitHub foundation | P7.1 | Done | WU3 RGs, OIDC identities, scoped RBAC, environment variables, and prod approval are configured |
 | P8.2 | Demo | Configure workload-specific values | P8.1 | Done | West US 3 model version/SKU/capacity values and subscription quota are confirmed by the successful dev deployment |
-| P8.3 | Demo | Deploy dev infrastructure and APIOps baseline | P8.2 | In progress | Dev smoke tests pass |
+| P8.3 | Demo | Deploy dev infrastructure and APIOps baseline | P8.2 | Done | Dev infrastructure and the 106-operation v1 APIOps contract are published; `/models`, `/responses`, and `/embeddings` smoke tests pass |
 | P8.4 | Demo | Approve and deploy prod | P8.3 | Not started | Prod smoke tests pass |
 | P8.5 | Demo | Demonstrate model and APIM change CD | P8.4 | Not started | Both change paths and rollback are demonstrated |
 
@@ -39,6 +39,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | 2026-09-22 | Register workload resource providers during bootstrap | RG-scoped deployment identities cannot register subscription providers during the release |
 | 2026-09-22 | Serialize Foundry project and model child-resource writes | The Cognitive Services control plane rejects concurrent mutations of the same Foundry account |
 | 2026-09-22 | Use unique nested deployment names and wait for APIM readiness | Canceled parent runs can leave long-running APIM module deployments active and block retries that reuse a static name |
+| 2026-09-22 | Generate the APIM contract from the official Azure OpenAI v1 specification | The upstream contract is OpenAPI 3.2, so generation preserves all operations while downgrading to APIM-compatible OpenAPI 3.0.3 with permissive payload schemas |
 
 ## Risks
 

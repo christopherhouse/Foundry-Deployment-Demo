@@ -41,6 +41,43 @@ Get-ChildItem -Path $artifactRoot -Filter '*.xml' -Recurse | ForEach-Object {
     }
 }
 
+$openApiPath = Join-Path $artifactRoot 'apis\foundry-openai-v1\specification.yaml'
+try {
+    $openApi = Get-Content -LiteralPath $openApiPath -Raw | ConvertFrom-Json
+}
+catch {
+    throw "Invalid generated OpenAPI artifact '$openApiPath': $($_.Exception.Message)"
+}
+
+if ($openApi.openapi -ne '3.0.3') {
+    throw "Expected APIM-compatible OpenAPI 3.0.3 but found '$($openApi.openapi)'."
+}
+
+$requiredOperations = @(
+    'createChatCompletion',
+    'createCompletion',
+    'createEmbedding',
+    'createResponse',
+    'getResponse',
+    'listModels'
+)
+
+$operationIds = $openApi.paths.PSObject.Properties | ForEach-Object {
+    $_.Value.PSObject.Properties | ForEach-Object {
+        $_.Value.operationId
+    }
+}
+
+foreach ($operationId in $requiredOperations) {
+    if ($operationIds -notcontains $operationId) {
+        throw "Required Azure OpenAI v1 operation is missing: $operationId"
+    }
+}
+
+if ($operationIds.Count -lt 100) {
+    throw "Expected the full Azure OpenAI v1 operation catalog but found only $($operationIds.Count) operations."
+}
+
 $allText = Get-ChildItem -Path $artifactRoot -File -Recurse | ForEach-Object {
     Get-Content -LiteralPath $_.FullName -Raw
 }
@@ -50,4 +87,3 @@ if (($allText -join "`n") -match '(?i)(client-secret|api-key\s*[:=]\s*[A-Za-z0-9
 }
 
 Write-Host 'APIOps artifact checks passed.'
-

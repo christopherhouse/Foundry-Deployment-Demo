@@ -9,3 +9,10 @@
 
 Do not add `--delete-unmatched`. Use the manual extractor workflow only to establish or compare a controlled baseline; review extracted changes before merging.
 
+The Foundry API specification is generated from Microsoft's official Azure OpenAI v1 contract:
+
+```powershell
+.\scripts\Update-FoundryOpenApiSpec.ps1
+```
+
+The generator pins the upstream `azure-rest-api-specs` commit and converts its OpenAPI 3.2 operation catalog to an APIM-compatible OpenAPI 3.0.3 document. Keep the generated request and response schemas permissive; APIM is the proxy/configuration boundary, while the official OpenAI client models remain the authoritative payload contract.
