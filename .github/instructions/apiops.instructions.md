@@ -7,5 +7,7 @@ applyTo: "apim-artifacts/**,apiops/**"
 - APIM-to-Foundry authentication must use `authentication-managed-identity`.
 - Do not commit secrets or redacted extraction placeholders.
 - Preserve product-to-API associations and backend dependencies.
+- Product tiers (`foundry-bronze`, `foundry-silver`, `foundry-gold`) enforce token budgets with `llm-token-limit` in the product policy. Read limits from `tier-<tier>-*` named values and give each tier its own `counter-key` prefix so the counters stay independent.
+- `llm-emit-token-metric` belongs once at API scope. It requires the Bicep-owned Application Insights logger plus the service diagnostic with `metrics: true`; do not add `loggers` or `diagnostics` artifacts.
 - Do not use destructive `--delete-unmatched` publishing.
 

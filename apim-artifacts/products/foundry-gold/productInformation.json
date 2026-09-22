@@ -1,0 +1,10 @@
+{
+  "properties": {
+    "approvalRequired": false,
+    "description": "Top tier for the Microsoft Foundry API. Highest token rate limit and daily token quota.",
+    "displayName": "Foundry Gold",
+    "state": "published",
+    "subscriptionRequired": true,
+    "terms": "For demonstration use only."
+  }
+}

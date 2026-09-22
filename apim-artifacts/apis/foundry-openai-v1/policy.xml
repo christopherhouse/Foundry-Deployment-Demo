@@ -1,6 +1,12 @@
 <policies>
   <inbound>
     <base />
+    <llm-emit-token-metric namespace="foundry-demo">
+      <dimension name="API ID" />
+      <dimension name="Operation ID" />
+      <dimension name="Product ID" />
+      <dimension name="Subscription ID" />
+    </llm-emit-token-metric>
     <rate-limit-by-key calls="{{foundry-rate-limit-calls}}" renewal-period="60" counter-key="@(context.Subscription?.Key ?? context.Request.IpAddress)" />
     <set-backend-service backend-id="foundry-backend" />
     <authentication-managed-identity resource="{{foundry-api-audience}}" ignore-error="false" />

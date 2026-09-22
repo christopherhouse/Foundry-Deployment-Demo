@@ -9,3 +9,23 @@ namedValues:
     properties:
       value: "60"
 
+  # Prod model deployments run at 50K TPM, so tier ceilings are raised accordingly.
+  - name: tier-bronze-tokens-per-minute
+    properties:
+      value: "2500"
+  - name: tier-bronze-token-quota
+    properties:
+      value: "125000"
+  - name: tier-silver-tokens-per-minute
+    properties:
+      value: "12500"
+  - name: tier-silver-token-quota
+    properties:
+      value: "625000"
+  - name: tier-gold-tokens-per-minute
+    properties:
+      value: "50000"
+  - name: tier-gold-token-quota
+    properties:
+      value: "2500000"
+

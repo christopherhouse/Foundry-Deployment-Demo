@@ -42,6 +42,17 @@ param apimPublisherName string
 @description('API Management publisher email address.')
 param apimPublisherEmail string
 
+@description('Log Analytics workspace name dedicated to this environment.')
+param logAnalyticsWorkspaceName string
+
+@description('Application Insights component name dedicated to this environment.')
+param applicationInsightsName string
+
+@description('Log Analytics retention in days.')
+@minValue(30)
+@maxValue(730)
+param logAnalyticsRetentionInDays int = 30
+
 @description('Foundry model deployments for this environment.')
 param modelDeployments ModelDeployment[] = []
 
@@ -61,6 +72,17 @@ module foundry './modules/foundry.bicep' = {
   }
 }
 
+module monitoring './modules/monitoring.bicep' = {
+  name: 'monitoring-${environmentName}-${moduleDeploymentSuffix}'
+  params: {
+    workspaceName: logAnalyticsWorkspaceName
+    applicationInsightsName: applicationInsightsName
+    location: location
+    retentionInDays: logAnalyticsRetentionInDays
+    tags: tags
+  }
+}
+
 module apim './modules/apim.bicep' = {
   name: 'apim-${environmentName}-${moduleDeploymentSuffix}'
   params: {
@@ -68,6 +90,7 @@ module apim './modules/apim.bicep' = {
     location: location
     publisherName: apimPublisherName
     publisherEmail: apimPublisherEmail
+    applicationInsightsName: monitoring.outputs.applicationInsightsName
     tags: tags
   }
 }
@@ -92,3 +115,5 @@ output foundryProjectId string = foundry.outputs.projectId
 output modelDeploymentNames array = foundry.outputs.modelDeploymentNames
 output apimServiceId string = apim.outputs.serviceId
 output apimGatewayUrl string = apim.outputs.gatewayUrl
+output logAnalyticsWorkspaceId string = monitoring.outputs.workspaceId
+output applicationInsightsId string = monitoring.outputs.applicationInsightsId
