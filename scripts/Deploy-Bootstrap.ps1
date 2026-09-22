@@ -82,6 +82,40 @@ if ($account.tenantId -ne $ExpectedTenantId) {
     throw "Selected tenant '$($account.tenantId)' does not match '$ExpectedTenantId'."
 }
 
+$requiredResourceProviders = @(
+    'Microsoft.ApiManagement',
+    'Microsoft.CognitiveServices'
+)
+
+foreach ($resourceProvider in $requiredResourceProviders) {
+    $registrationState = Invoke-CheckedCommand `
+        -Command {
+            az provider show `
+                --namespace $resourceProvider `
+                --subscription $AzureSubscriptionId `
+                --query registrationState `
+                --output tsv
+        } `
+        -FailureMessage "Unable to read registration state for resource provider '$resourceProvider'."
+
+    if ($registrationState -ne 'Registered') {
+        if (-not $PSCmdlet.ShouldProcess($resourceProvider, 'Register Azure resource provider')) {
+            Write-Warning "Bootstrap preview stopped because '$resourceProvider' must be registered before Azure can evaluate the workload."
+            return
+        }
+
+        Invoke-CheckedCommand `
+            -Command {
+                az provider register `
+                    --namespace $resourceProvider `
+                    --subscription $AzureSubscriptionId `
+                    --wait
+            } `
+            -FailureMessage "Unable to register Azure resource provider '$resourceProvider'." |
+            Out-Null
+    }
+}
+
 $devResourceGroupName = Get-BicepStringParameter -Path $devParameters -Name 'resourceGroupName'
 $prodResourceGroupName = Get-BicepStringParameter -Path $prodParameters -Name 'resourceGroupName'
 $devFoundryAccountName = Get-BicepStringParameter -Path $devParameters -Name 'foundryAccountName'

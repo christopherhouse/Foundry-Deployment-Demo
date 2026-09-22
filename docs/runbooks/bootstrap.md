@@ -45,6 +45,7 @@ The operator must be able to create resource groups, managed identities, federat
 The script:
 
 - Verifies the exact subscription name, ID, and tenant.
+- Registers the `Microsoft.CognitiveServices` and `Microsoft.ApiManagement` resource providers when required.
 - Reads the repository OIDC customization and uses GitHub's actual subject prefix, including immutable owner and repository IDs when enabled.
 - Runs an Azure what-if.
 - Deploys `bootstrap/main.bicep`.
