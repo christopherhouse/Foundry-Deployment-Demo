@@ -45,6 +45,8 @@ The operator must be able to create resource groups, managed identities, federat
 The script:
 
 - Verifies the exact subscription name, ID, and tenant.
+- Registers the `Microsoft.CognitiveServices` and `Microsoft.ApiManagement` resource providers when required.
+- Reads the repository OIDC customization and uses GitHub's actual subject prefix, including immutable owner and repository IDs when enabled.
 - Runs an Azure what-if.
 - Deploys `bootstrap/main.bicep`.
 - Creates or updates the GitHub `dev` and `prod` environments.
@@ -55,6 +57,7 @@ The script:
 Use `-WhatIf` to preview script-side changes or `-SkipGitHubConfiguration` to deploy only Azure resources.
 
 Override the reviewer with `-ProdReviewerLogin <login>` when another reviewer should approve production.
+Use `-GitHubSubjectPrefix <prefix>` only when GitHub CLI discovery is unavailable; the normal path discovers the prefix automatically.
 
 After publisher metadata, model details, and quota are ready, enable merge-driven releases:
 
