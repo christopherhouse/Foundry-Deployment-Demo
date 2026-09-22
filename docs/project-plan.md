@@ -19,7 +19,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | P6.2 | CI/CD | Add APIOps validation and publishing workflows | P4.3, P5.1 | Done | Dry-run, dev publish, and prod promotion exist |
 | P7.1 | Quality | Add local validation and smoke-test scripts | P6.1, P6.2 | Done | Repository and deployed environment checks are repeatable |
 | P8.1 | Demo | Bootstrap Azure/GitHub foundation | P7.1 | Done | WU3 RGs, OIDC identities, scoped RBAC, environment variables, and prod approval are configured |
-| P8.2 | Demo | Configure workload-specific values | P8.1 | Not started | Publisher metadata, globally unique names, model version/SKU/capacity, and quota are confirmed |
+| P8.2 | Demo | Configure workload-specific values | P8.1 | In progress | West US 3 model version/SKU/capacity values are configured; live deployment will confirm subscription quota |
 | P8.3 | Demo | Deploy dev infrastructure and APIOps baseline | P8.2 | Not started | Dev smoke tests pass |
 | P8.4 | Demo | Approve and deploy prod | P8.3 | Not started | Prod smoke tests pass |
 | P8.5 | Demo | Demonstrate model and APIM change CD | P8.4 | Not started | Both change paths and rollback are demonstrated |
@@ -34,12 +34,13 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | 2026-09-22 | Use separate Developer APIM instances | Clear environment isolation for a cost-conscious demo |
 | 2026-09-22 | Promote the same commit through protected environments | Auditable, repeatable dev-to-prod flow |
 | 2026-09-22 | Use WU3 UAMIs for GitHub OIDC | Keeps federation and RBAC in ARM/Bicep and scopes deployment permissions to each environment RG |
+| 2026-09-22 | Use Data Zone Standard for three recent chat models and one embedding model | West US 3 catalog confirms GA support for GPT-6 Astra, GPT-5.6 Sol, GPT-5.6 Luna, and text-embedding-3-large |
 
 ## Risks
 
 | Risk | Response |
 |---|---|
-| Model version or quota unavailable | Verify before uncommenting model objects; keep model data parameterized |
+| Model quota is insufficient | Keep automatic releases disabled until review; use the first dev deployment to confirm subscription quota and adjust requested TPM if necessary |
 | Developer SKU mistaken for production | Label all documentation and tags as demo/nonproduction |
 | Global resource name collision | Edit names before deployment and keep APIOps overrides aligned |
 | RBAC propagation delay | Retry smoke tests after role assignments settle |
