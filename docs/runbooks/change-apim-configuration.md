@@ -9,6 +9,14 @@
 
 Do not add `--delete-unmatched`. Use the manual extractor workflow only to establish or compare a controlled baseline; review extracted changes before merging.
 
+## Change content safety enforcement
+
+The API-level `llm-content-safety` policy screens requests and completions through the environment-specific `content-safety-backend`. The backend uses APIM's managed identity; do not add account keys or secret named values.
+
+The default balanced posture enables prompt-shield detection and blocks severity 4 or higher for `Hate`, `SelfHarm`, `Sexual`, and `Violence`. Keep all category thresholds explicit and review changes to `shield-prompt`, `enforce-on-completions`, or thresholds as security behavior changes.
+
+After publishing to dev, verify a benign prompt succeeds and an intentionally unsafe synthetic prompt receives `403`. Do not use real personal, confidential, or graphic content in the test payload.
+
 The Foundry API specification is generated from Microsoft's official Azure OpenAI v1 contract:
 
 ```powershell

@@ -7,11 +7,12 @@ Each environment has one resource group containing:
 - Microsoft Foundry `AIServices` account
 - Foundry project
 - Zero or more model deployments
+- Azure AI Content Safety account
 - Azure API Management Developer SKU instance
 - Log Analytics workspace and workspace-based Application Insights component
 - Azure Monitor diagnostic settings routing all Foundry account, Foundry project, and APIM resource logs and metrics to Log Analytics
 - APIM Application Insights logger and service-scope diagnostic with custom metrics enabled
-- Role assignment allowing the APIM system-assigned identity to invoke Foundry models
+- Role assignments allowing the APIM system-assigned identity to invoke Foundry models and analyze content
 
 The environments use public endpoints and no virtual networks.
 
@@ -21,11 +22,13 @@ The environments use public endpoints and no virtual networks.
 |---|---|
 | Resource group | Bicep |
 | Foundry account/project/model deployment | Bicep |
+| Azure AI Content Safety account | Bicep |
 | APIM service and identity | Bicep |
 | Log Analytics workspace and Application Insights | Bicep |
 | Foundry account/project and APIM Azure Monitor diagnostic settings | Bicep |
 | APIM Application Insights logger and diagnostic | Bicep |
 | APIM-to-Foundry RBAC | Bicep |
+| APIM-to-Content-Safety RBAC | Bicep |
 | Foundry data plane administrator RBAC | Bicep |
 | APIM API and OpenAPI contract | APIOps |
 | APIM backend and named values | APIOps |
@@ -55,6 +58,12 @@ The `allLogs` group avoids a hard-coded category list and automatically covers p
 
 These Azure Monitor settings are separate from the APIM `applicationinsights` child diagnostic. Azure Monitor captures service resource logs and platform metrics in Log Analytics; the APIM child diagnostic sends API request telemetry and custom token metrics to Application Insights.
 
+## Content safety
+
+Each environment has a dedicated Azure AI Content Safety account with local authentication disabled. APIM's system-assigned identity receives `Cognitive Services User` only at that account's scope, and the APIOps-managed `content-safety-backend` uses managed-identity authentication with the `https://cognitiveservices.azure.com` resource.
+
+The Foundry API policy validates the caller before sending content for analysis. At API scope, it uses `llm-content-safety` to inspect requests and completions, enables prompt-shield attack detection, and blocks severity 4 or higher for `Hate`, `SelfHarm`, `Sexual`, and `Violence` using eight severity levels. Blocked nonstreaming traffic returns `403` and is stopped before inherited product token limits or the Foundry backend run.
+
 ## Product tiers
 
 Three published products expose the same Foundry API with different token budgets, enforced by `llm-token-limit` in each product policy.
@@ -83,13 +92,14 @@ One manual step remains: in the Application Insights component, set **Usage and 
 
 1. A client sends an Azure OpenAI v1 request to `https://<apim>.azure-api.net/openai/v1/<operation>`. Use `/responses` for new text-generation integrations; `/chat/completions`, `/completions`, `/embeddings`, and the rest of the official v1 operation catalog are also represented.
 2. APIM validates the caller's Microsoft Entra token against the tenant, Azure CLI client application ID, and dedicated agent API audience.
-3. APIM requires a product-scoped subscription and applies the request rate limit.
-4. The product policy enforces the tier's token rate limit and daily token quota.
-5. The API policy emits token metrics to Application Insights.
-6. APIM selects the environment-specific Foundry backend.
-7. APIM obtains a separate Microsoft Entra token through its managed identity.
+3. APIM sends the prompt to the environment's Content Safety account through managed identity, checks prompt attacks and four harm categories, and blocks unsafe requests.
+4. APIM requires a product-scoped subscription and applies the request rate limit.
+5. The product policy enforces the tier's token rate limit and daily token quota.
+6. The API policy emits token metrics to Application Insights.
+7. APIM selects the environment-specific Foundry backend and obtains a separate Microsoft Entra token through its managed identity.
 8. Foundry authorizes the APIM identity through `Cognitive Services OpenAI User`.
 9. For inference operations, the request body `model` value selects the Foundry deployment.
+10. APIM checks the completion through Content Safety before returning it to the client.
 
 The APIM contract is generated from Microsoft's official Azure OpenAI v1 specification. The upstream OpenAPI 3.2 document is converted to OpenAPI 3.0.3 with permissive payload schemas because APIM doesn't support OpenAPI 3.2. APIM uses the v1 Microsoft Entra audience `https://ai.azure.com` when it authenticates to Foundry.
 

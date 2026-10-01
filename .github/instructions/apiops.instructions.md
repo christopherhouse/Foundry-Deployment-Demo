@@ -9,5 +9,5 @@ applyTo: "apim-artifacts/**,apiops/**"
 - Preserve product-to-API associations and backend dependencies.
 - Product tiers (`foundry-bronze`, `foundry-silver`, `foundry-gold`) enforce token budgets with `llm-token-limit` in the product policy. Read limits from `tier-<tier>-*` named values and give each tier its own `counter-key` prefix so the counters stay independent.
 - `llm-emit-token-metric` belongs once at API scope. It requires the Bicep-owned Application Insights logger plus the service diagnostic with `metrics: true`; do not add `loggers` or `diagnostics` artifacts.
+- `llm-content-safety` belongs once at API scope. Use the APIOps-owned `content-safety-backend`, managed identity authentication, prompt shielding, completion enforcement, and explicit category thresholds.
 - Do not use destructive `--delete-unmatched` publishing.
-

@@ -77,14 +77,15 @@ The script sets:
 - `DEPLOYMENT_LOCATION`
 - `APIM_RESOURCE_GROUP`
 - `APIM_SERVICE_NAME`
+- `CONTENT_SAFETY_ACCOUNT_NAME`
 - `FOUNDRY_ACCOUNT_NAME`
 
 The committed default names are:
 
-| Environment | Resource group | APIM |
-|---|---|---|
-| dev | `rg-foundrydeploydemo-dev` | `apim-foundrydeploydemo-dev-ch` |
-| prod | `rg-foundrydeploydemo-prod` | `apim-foundrydeploydemo-prod-ch` |
+| Environment | Resource group | APIM | Content Safety |
+|---|---|---|---|
+| dev | `rg-foundrydeploydemo-dev` | `apim-foundrydeploydemo-dev-ch` | `cs-foundrydeploydemo-dev-ch` |
+| prod | `rg-foundrydeploydemo-prod` | `apim-foundrydeploydemo-prod-ch` | `cs-foundrydeploydemo-prod-ch` |
 
 ## 6. Deploy the workload
 

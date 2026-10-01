@@ -1,0 +1,17 @@
+{
+  "properties": {
+    "credentials": {
+      "managedIdentity": {
+        "resource": "https://cognitiveservices.azure.com"
+      }
+    },
+    "description": "Azure AI Content Safety backend. URL is overridden per environment.",
+    "protocol": "http",
+    "title": "Azure AI Content Safety",
+    "tls": {
+      "validateCertificateChain": true,
+      "validateCertificateName": true
+    },
+    "url": "https://replace-me.cognitiveservices.azure.com"
+  }
+}
