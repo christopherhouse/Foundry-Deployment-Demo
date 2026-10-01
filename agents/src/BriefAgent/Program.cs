@@ -5,17 +5,19 @@ using System.ClientModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-AgentOptions options = AgentOptions.Load("gold", "FOUNDRY_GOLD_SUBSCRIPTION_KEY");
+AgentOptions options = AgentOptions.Load(AgentRole.Market);
 RetryStatistics retries = new();
-ChatClient client = new ApimChatClient(options, retries).Client;
-TokenReport report = new("Market Brief Analyst", options.Tier, retries);
+ChatClient client = new GatewayChatClient(options, retries).Client;
+TokenReport report = new("Market Brief Analyst", options, retries);
 
 string dataPath = Path.Combine(AppContext.BaseDirectory, "Data", "signals.json");
 Signal[] signals = JsonSerializer.Deserialize<Signal[]>(await File.ReadAllTextAsync(dataPath))
     ?? throw new InvalidOperationException("Market signal seed data is empty.");
 string evidence = JsonSerializer.Serialize(signals);
 
-Console.WriteLine($"Market Brief Analyst: {signals.Length} synthetic signals, tier={options.Tier}, model={options.Model}");
+Console.WriteLine(
+    $"Market Brief Analyst: {signals.Length} synthetic signals, profile={options.Profile}, " +
+    $"label={options.AgentLabel}, auth={options.AuthMode}, model={options.Model}");
 
 try
 {

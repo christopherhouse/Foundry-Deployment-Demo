@@ -6,13 +6,13 @@ public sealed class RetryStatistics
     private int retryCount;
     private int throttledCount;
     private int unavailableCount;
-    private int quotaExceededCount;
+    private int forbiddenCount;
     private TimeSpan totalWait;
 
     public int RetryCount { get { lock (sync) { return retryCount; } } }
     public int ThrottledCount { get { lock (sync) { return throttledCount; } } }
     public int UnavailableCount { get { lock (sync) { return unavailableCount; } } }
-    public int QuotaExceededCount { get { lock (sync) { return quotaExceededCount; } } }
+    public int ForbiddenCount { get { lock (sync) { return forbiddenCount; } } }
     public TimeSpan TotalWait { get { lock (sync) { return totalWait; } } }
 
     internal bool CanWait(TimeSpan delay, TimeSpan budget)
@@ -34,11 +34,11 @@ public sealed class RetryStatistics
         }
     }
 
-    internal void RecordQuotaExceeded()
+    internal void RecordForbidden()
     {
         lock (sync)
         {
-            quotaExceededCount++;
+            forbiddenCount++;
         }
     }
 }

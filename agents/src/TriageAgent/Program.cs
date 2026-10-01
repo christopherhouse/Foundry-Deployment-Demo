@@ -4,10 +4,10 @@ using OpenAI.Chat;
 using System.ClientModel;
 using System.Text.Json;
 
-AgentOptions options = AgentOptions.Load("bronze", "FOUNDRY_BRONZE_SUBSCRIPTION_KEY");
+AgentOptions options = AgentOptions.Load(AgentRole.Triage);
 RetryStatistics retries = new();
-ChatClient client = new ApimChatClient(options, retries).Client;
-TokenReport report = new("Ticket Triage Agent", options.Tier, retries);
+ChatClient client = new GatewayChatClient(options, retries).Client;
+TokenReport report = new("Ticket Triage Agent", options, retries);
 
 string dataPath = Path.Combine(AppContext.BaseDirectory, "Data", "tickets.json");
 Ticket[] tickets = JsonSerializer.Deserialize<Ticket[]>(
@@ -15,7 +15,9 @@ Ticket[] tickets = JsonSerializer.Deserialize<Ticket[]>(
     new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
     ?? throw new InvalidOperationException("Ticket seed data is empty.");
 
-Console.WriteLine($"Ticket Triage Agent: {tickets.Length} synthetic tickets, tier={options.Tier}, model={options.Model}");
+Console.WriteLine(
+    $"Ticket Triage Agent: {tickets.Length} synthetic tickets, profile={options.Profile}, " +
+    $"label={options.AgentLabel}, auth={options.AuthMode}, model={options.Model}");
 
 try
 {

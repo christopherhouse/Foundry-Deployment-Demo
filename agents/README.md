@@ -1,19 +1,39 @@
-# Foundry APIM demo agents
+# Switchable AI gateway demo agents
 
-Two unattended .NET 10 console agents call the same `gpt-5-6-luna` deployment through APIM:
+Two unattended .NET 10 console agents can run through either of two local profiles:
 
-- **Ticket Triage Agent** uses `foundry-bronze` and makes many small calls, intentionally demonstrating TPM throttling and `Retry-After` recovery.
-- **Market Brief Analyst** uses `foundry-gold` and makes three larger chained calls to produce a synthetic executive brief.
+- **`foundry-apim`** uses Microsoft Entra authentication plus separate bronze and gold APIM subscription keys.
+- **`ai-gateway`** uses separate `api-key` credentials for the Ticket Triage and Market Brief agents, with no Entra token.
 
-Both authenticate with a Microsoft Entra user token from `DefaultAzureCredential` and send a separate product-scoped APIM subscription key. They print model token usage, APIM token headers, retry waits, and a per-run summary.
+Each profile carries its own OpenAI-compatible base URL and model deployment name. Both agents print model token usage, retry waits, and a per-run summary. Foundry-specific gateway headers are printed only when the active gateway returns them.
 
-## Run
+## Initialize profiles
 
 ```powershell
+# Creates and activates agents\profiles\foundry-apim.env.local
 .\scripts\Initialize-AgentDemo.ps1
 
-dotnet build .\agents\FoundryAgents.slnx
-.\agents\run-demo.ps1
+# Securely prompts for two AI Gateway API keys and activates the profile
+.\scripts\Initialize-AiGatewayAgentProfile.ps1 -Model '<ai-gateway-model>'
 ```
 
-The initialization script writes `agents/.env`, which is ignored by git. No Foundry key, service-principal secret, or APIM subscription key is committed.
+The AI Gateway profile defaults to:
+
+```text
+https://astral-spring-2206.azure-api.net/default/models/openai/v1
+```
+
+Both local profile files and the generated `agents\.env` are ignored by Git.
+
+## Switch and run
+
+```powershell
+.\scripts\Switch-AgentDemoProfile.ps1 -Profile foundry-apim
+.\scripts\Switch-AgentDemoProfile.ps1 -Profile ai-gateway
+
+dotnet build .\agents\FoundryAgents.slnx
+.\agents\run-demo.ps1 -Profile foundry-apim
+.\agents\run-demo.ps1 -Profile ai-gateway
+```
+
+Omit `-Profile` to use the currently active `agents\.env`. The switcher validates the complete source profile before replacing the active configuration and never prints credential values.

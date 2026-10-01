@@ -23,6 +23,7 @@ deployment-outputs*.json
 .env
 .env.*
 !.env.example
+agents/profiles/*.env.local
 *.local
 *.secret.*
 secrets/
@@ -40,4 +41,3 @@ tmp/
 temp/
 *.tmp
 *.log
-

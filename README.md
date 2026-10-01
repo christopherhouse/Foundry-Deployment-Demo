@@ -36,12 +36,12 @@ Bicep owns resource groups, Foundry, model deployments, APIM service instances, 
 
 ## Demo agents
 
-Two unattended .NET 10 console agents under `agents/` consume `gpt-5-6-luna` through APIM:
+Two unattended .NET 10 console agents under `agents/` can switch between the repository-managed Foundry APIM path and an externally managed AI Gateway preview resource:
 
-- **Ticket Triage Agent** uses a bronze product subscription and many small requests to demonstrate token-per-minute throttling plus bounded `Retry-After` recovery.
-- **Market Brief Analyst** uses a gold product subscription and three large chained requests to demonstrate a different token-consumption profile.
+- **Ticket Triage Agent** makes many small requests; on the Foundry APIM profile it uses the bronze product to demonstrate token-per-minute throttling plus bounded `Retry-After` recovery.
+- **Market Brief Analyst** makes three large chained requests; on the Foundry APIM profile it uses the gold product to demonstrate a different token-consumption profile.
 
-APIM requires both a Microsoft Entra access token and a product-scoped subscription key. The token authenticates the signed-in caller; the subscription selects the tier and keeps token metrics independently attributable. See [Run the .NET agent demo](docs/runbooks/run-agent-demo.md).
+The Foundry APIM profile requires both a Microsoft Entra access token and a product-scoped subscription key. The alternate AI Gateway profile uses one `api-key` credential per agent and no Entra authentication. Local scripts securely initialize and switch the active profile without bringing the external AI Gateway infrastructure under repository management. See [Run the .NET agent demo](docs/runbooks/run-agent-demo.md).
 
 ## Prerequisites
 
