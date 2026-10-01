@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/apiops-cli/main/schemas/v1/extractor-config.schema.json
 apis:
-  - foundry-openai-v1
+  - foundry-openai-v1:
+      operations: []
+      diagnostics: []
+      schemas: []
+      releases: []
 backends:
   - foundry-backend
   - content-safety-backend

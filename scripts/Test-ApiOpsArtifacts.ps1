@@ -226,6 +226,8 @@ foreach ($requiredText in @(
     '--output ./apim-artifacts',
     '--filter ./apiops/configuration.extractor.yaml',
     '--remove-stale',
+    'git restore --source=HEAD -- ./apim-artifacts/apis/foundry-openai-v1/specification.yaml',
+    './scripts/Repair-ExtractedApiOpsPolicies.ps1 -ArtifactRoot ./apim-artifacts',
     'actions/upload-artifact@v4',
     'actions/download-artifact@v4',
     'rm -rf ./apim-artifacts',
@@ -240,6 +242,14 @@ foreach ($requiredText in @(
 
 if ($extractWorkflow -match '--delete-unmatched') {
     throw 'The APIOps extraction workflow must not use --delete-unmatched.'
+}
+
+$extractorConfiguration = Get-Content -LiteralPath (Join-Path $repoRoot 'apiops\configuration.extractor.yaml') -Raw
+foreach ($excludedApiChild in @('operations', 'diagnostics', 'schemas', 'releases')) {
+    $pattern = '(?m)^\s{6}' + [regex]::Escape($excludedApiChild) + ':\s*\[\]\s*$'
+    if ($extractorConfiguration -notmatch $pattern) {
+        throw "The APIOps extractor must exclude generated API child '$excludedApiChild' artifacts."
+    }
 }
 
 Write-Host 'APIOps artifact checks passed.'

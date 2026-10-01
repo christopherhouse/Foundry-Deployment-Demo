@@ -62,6 +62,13 @@ jobs:
             --filter ./apiops/configuration.extractor.yaml \
             --remove-stale
 
+      - name: Preserve generated OpenAPI contract
+        run: git restore --source=HEAD -- ./apim-artifacts/apis/foundry-openai-v1/specification.yaml
+
+      - name: Repair extracted policy XML
+        shell: pwsh
+        run: ./scripts/Repair-ExtractedApiOpsPolicies.ps1 -ArtifactRoot ./apim-artifacts
+
       - name: Validate extracted artifacts
         shell: pwsh
         run: ./scripts/Test-ApiOpsArtifacts.ps1

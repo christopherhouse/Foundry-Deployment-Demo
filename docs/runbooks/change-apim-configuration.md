@@ -16,9 +16,10 @@ Use **Actions > Extract APIOps artifacts > Run workflow** when an APIOps-owned r
 1. Select the source environment. Use `dev` for the normal authoring flow; use `prod` only when intentionally reconciling a production-side change.
 2. The workflow checks out the default branch and runs the pinned APIOps CLI against `apiops/configuration.extractor.yaml`.
 3. `--remove-stale` synchronizes the managed extraction scope so additions, modifications, and deletions are represented.
-4. The extracted tree is validated with `Test-ApiOpsArtifacts.ps1` before it can become a pull request.
-5. The workflow opens `apim-extract-<environment>-<run-id>` against the default branch. If the extracted artifacts match the repository, no pull request is created.
-6. Review the generated delta. Move environment-specific values into `apiops/configuration.dev.yaml` and `apiops/configuration.prod.yaml` before merging.
+4. The workflow preserves the repository-generated OpenAPI contract and excludes extracted operation/schema children. APIM reserializes imported specifications and injects environment-specific server data, so `Update-FoundryOpenApiSpec.ps1` remains the only supported way to change that contract.
+5. The workflow repairs APIOps CLI 1.0.3 policy attributes whose extracted C# expressions contain unescaped nested quotes, then validates the tree with `Test-ApiOpsArtifacts.ps1`.
+6. The workflow opens `apim-extract-<environment>-<run-id>` against the default branch. If the extracted artifacts match the repository, no pull request is created.
+7. Review the generated delta. Move environment-specific values into `apiops/configuration.dev.yaml` and `apiops/configuration.prod.yaml` before merging.
 
 The extraction filter deliberately excludes Bicep-owned APIM loggers and diagnostics, APIM subscriptions, and other resources outside this repository's APIOps ownership boundary. The generated pull request is reviewed and merged through the same validation and release path as a hand-authored APIOps change.
 
