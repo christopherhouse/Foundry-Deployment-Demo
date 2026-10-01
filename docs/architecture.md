@@ -9,6 +9,7 @@ Each environment has one resource group containing:
 - Zero or more model deployments
 - Azure API Management Developer SKU instance
 - Log Analytics workspace and workspace-based Application Insights component
+- Azure Monitor diagnostic settings routing all Foundry account, Foundry project, and APIM resource logs and metrics to Log Analytics
 - APIM Application Insights logger and service-scope diagnostic with custom metrics enabled
 - Role assignment allowing the APIM system-assigned identity to invoke Foundry models
 
@@ -22,6 +23,7 @@ The environments use public endpoints and no virtual networks.
 | Foundry account/project/model deployment | Bicep |
 | APIM service and identity | Bicep |
 | Log Analytics workspace and Application Insights | Bicep |
+| Foundry account/project and APIM Azure Monitor diagnostic settings | Bicep |
 | APIM Application Insights logger and diagnostic | Bicep |
 | APIM-to-Foundry RBAC | Bicep |
 | APIM API and OpenAPI contract | APIOps |
@@ -32,6 +34,14 @@ The environments use public endpoints and no virtual networks.
 Do not cross these boundaries. A resource managed by both systems can oscillate or be deleted unexpectedly.
 
 The APIM logger and diagnostic are the deliberate exception to "APIM configuration belongs to APIOps". The logger needs the Application Insights connection string, which Bicep can read from the component in the same resource group without ever writing a secret to the repository. `apiops/configuration.extractor.yaml` keeps `loggers` and `diagnostics` empty so APIOps never manages them.
+
+## Resource diagnostics
+
+Bicep creates Azure Monitor diagnostic settings on the Foundry account, its project, and the APIM service. All three use the `allLogs` category group and `AllMetrics`, route to the environment's Log Analytics workspace, and use resource-specific tables through `logAnalyticsDestinationType: Dedicated`.
+
+The `allLogs` group avoids a hard-coded category list and automatically covers provider categories added after deployment. As of October 1, 2026, the deployed APIM services expose `GatewayLogs`, `WebSocketConnectionLogs`, `DeveloperPortalAuditLogs`, `GatewayLlmLogs`, and `GatewayMCPLogs`; the Foundry accounts expose `Audit`, `RequestResponse`, `AzureOpenAIRequestUsage`, `Trace`, and `ManagedNetworkEvent`; and the Foundry projects expose `Audit` and `Trace`. Model deployment child resources do not support diagnostic settings.
+
+These Azure Monitor settings are separate from the APIM `applicationinsights` child diagnostic. Azure Monitor captures service resource logs and platform metrics in Log Analytics; the APIM child diagnostic sends API request telemetry and custom token metrics to Application Insights.
 
 ## Product tiers
 

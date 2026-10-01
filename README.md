@@ -7,7 +7,7 @@ This repository demonstrates two independent continuous-delivery paths:
 
 The demo uses one Azure subscription, separate `dev` and `prod` resource groups, public endpoints, and separate APIM Developer SKU instances. Developer SKU is intentionally demo-only and has no production SLA.
 
-Each environment also has a dedicated Log Analytics workspace and Application Insights component so APIM can emit per-tier token-consumption metrics.
+Each environment also has a dedicated Log Analytics workspace and Application Insights component. Azure Monitor diagnostic settings send every available Foundry account, Foundry project, and APIM resource-log category plus all metrics to that workspace, while Application Insights receives APIM request telemetry and per-tier token-consumption metrics.
 
 Three published products — `foundry-bronze`, `foundry-silver`, and `foundry-gold` — expose the same Foundry API with increasing token-per-minute limits and daily token quotas, enforced by product-scope `llm-token-limit` policies. See [Architecture](docs/architecture.md) for the tier table.
 
@@ -32,7 +32,7 @@ main
 APIM (managed identity) --> Microsoft Foundry model deployments
 ```
 
-Bicep owns resource groups, Foundry, model deployments, APIM service instances, identities, RBAC, Log Analytics, Application Insights, and the APIM Application Insights logger and diagnostic. APIOps owns APIM APIs, backends, named values, products, associations, and policies.
+Bicep owns resource groups, Foundry, model deployments, APIM service instances, identities, RBAC, Log Analytics, Application Insights, Azure Monitor diagnostic settings, and the APIM Application Insights logger and diagnostic. APIOps owns APIM APIs, backends, named values, products, associations, and policies.
 
 ## Demo agents
 

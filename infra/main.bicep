@@ -67,6 +67,7 @@ module foundry './modules/foundry.bicep' = {
     accountName: foundryAccountName
     projectName: foundryProjectName
     location: location
+    logAnalyticsWorkspaceId: monitoring.outputs.workspaceId
     modelDeployments: modelDeployments
     tags: tags
   }
@@ -91,6 +92,7 @@ module apim './modules/apim.bicep' = {
     publisherName: apimPublisherName
     publisherEmail: apimPublisherEmail
     applicationInsightsName: monitoring.outputs.applicationInsightsName
+    logAnalyticsWorkspaceId: monitoring.outputs.workspaceId
     tags: tags
   }
 }

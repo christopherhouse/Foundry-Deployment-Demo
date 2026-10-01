@@ -23,7 +23,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | P8.3 | Demo | Deploy dev infrastructure and APIOps baseline | P8.2 | Done | Dev infrastructure and the 106-operation v1 APIOps contract are published; `/models`, `/responses`, and `/embeddings` smoke tests pass |
 | P8.4 | Demo | Approve and deploy prod | P8.3 | In progress | Prod smoke tests pass |
 | P8.5 | Demo | Demonstrate model and APIM change CD | P8.4 | Not started | Both change paths and rollback are demonstrated |
-| P9.1 | Governance | Add Log Analytics and Application Insights with APIM diagnostics | P8.3 | Done | Each environment has a dedicated workspace and component, and the APIM diagnostic has `metrics: true` |
+| P9.1 | Governance | Add Log Analytics and Application Insights with service diagnostics | P8.3 | Done | Each environment has a dedicated workspace and component; Foundry accounts/projects and APIM send all resource logs and metrics to the workspace; the APIM Application Insights diagnostic has `metrics: true` |
 | P9.2 | Governance | Add bronze/silver/gold products with tiered token limits | P9.1 | Done | Each product publishes the Foundry API and enforces its own `llm-token-limit` rate limit and daily quota |
 | P9.3 | Governance | Emit token metrics from the Foundry API policy | P9.1 | Done | `llm-emit-token-metric` reports token consumption with API, operation, product, and subscription dimensions |
 | P10.1 | Agents | Add Microsoft Entra caller validation at APIM | P9.3 | Done | APIM validates tenant, audience, and Azure CLI client application before metering requests |
@@ -56,6 +56,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | 2026-10-01 | Use a secretless resource app pre-authorized for Azure CLI | Local `DefaultAzureCredential` can obtain delegated tokens without introducing application secrets or changing the RG-scoped deployment identities |
 | 2026-10-01 | Use .NET 10 and the official OpenAI client for both demo agents | One shared client and retry implementation keeps the same model/API comparison focused on bronze versus gold traffic shape |
 | 2026-10-01 | Honor `Retry-After` with bounded waits | The bronze demo makes throttling visible while attempt, delay, and total-wait caps keep unattended runs finite |
+| 2026-10-01 | Route Foundry account/project and APIM `allLogs` plus `AllMetrics` to Log Analytics | Category groups avoid an incomplete static list, resource-specific tables improve queryability, and both environments use their existing dedicated workspace |
 
 ## Risks
 
