@@ -6,8 +6,17 @@ backends:
 namedValues:
   - foundry-api-audience
   - foundry-rate-limit-calls
+  - tier-bronze-tokens-per-minute
+  - tier-bronze-token-quota
+  - tier-silver-tokens-per-minute
+  - tier-silver-token-quota
+  - tier-gold-tokens-per-minute
+  - tier-gold-token-quota
 products:
   - foundry-demo
+  - foundry-bronze
+  - foundry-silver
+  - foundry-gold
 tags: []
 versionSets: []
 loggers: []

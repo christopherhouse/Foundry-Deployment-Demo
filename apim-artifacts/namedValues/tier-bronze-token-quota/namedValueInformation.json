@@ -1,0 +1,7 @@
+{
+  "properties": {
+    "displayName": "tier-bronze-token-quota",
+    "secret": false,
+    "value": "50000"
+  }
+}

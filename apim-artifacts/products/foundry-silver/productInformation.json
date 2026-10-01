@@ -1,0 +1,10 @@
+{
+  "properties": {
+    "approvalRequired": false,
+    "description": "Mid tier for the Microsoft Foundry API. Higher token rate limit and daily token quota than Bronze.",
+    "displayName": "Foundry Silver",
+    "state": "published",
+    "subscriptionRequired": true,
+    "terms": "For demonstration use only."
+  }
+}

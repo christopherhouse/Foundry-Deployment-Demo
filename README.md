@@ -3,9 +3,13 @@
 This repository demonstrates two independent continuous-delivery paths:
 
 1. **Microsoft Foundry infrastructure and model deployments** through Bicep and environment-specific `.bicepparam` files.
-2. **Azure API Management configuration** through the APIOps CLI, including an OpenAI v1-compatible API, backend, product, named values, and policy.
+2. **Azure API Management configuration** through the APIOps CLI, including an OpenAI v1-compatible API, backend, tiered products, named values, and policy.
 
 The demo uses one Azure subscription, separate `dev` and `prod` resource groups, public endpoints, and separate APIM Developer SKU instances. Developer SKU is intentionally demo-only and has no production SLA.
+
+Each environment also has a dedicated Log Analytics workspace and Application Insights component so APIM can emit per-tier token-consumption metrics.
+
+Three published products — `foundry-bronze`, `foundry-silver`, and `foundry-gold` — expose the same Foundry API with increasing token-per-minute limits and daily token quotas, enforced by product-scope `llm-token-limit` policies. See [Architecture](docs/architecture.md) for the tier table.
 
 Bootstrap Bicep creates the two West US 3 resource groups and one GitHub OIDC user-assigned managed identity per environment. Each identity receives `Contributor` and `User Access Administrator` only on its own resource group.
 
@@ -28,7 +32,7 @@ main
 APIM (managed identity) --> Microsoft Foundry model deployments
 ```
 
-Bicep owns resource groups, Foundry, model deployments, APIM service instances, identities, and RBAC. APIOps owns APIM APIs, backends, named values, products, associations, and policies.
+Bicep owns resource groups, Foundry, model deployments, APIM service instances, identities, RBAC, Log Analytics, Application Insights, and the APIM Application Insights logger and diagnostic. APIOps owns APIM APIs, backends, named values, products, associations, and policies.
 
 ## Prerequisites
 

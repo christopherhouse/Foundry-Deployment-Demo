@@ -42,5 +42,27 @@ if ($LASTEXITCODE -ne 0 -or $apiName -ne 'foundry-openai-v1') {
     throw 'Foundry APIM API was not found.'
 }
 
+foreach ($productName in @('foundry-demo', 'foundry-bronze', 'foundry-silver', 'foundry-gold')) {
+    $foundProduct = az rest `
+        --method get `
+        --url "$apimId/products/$productName`?api-version=2024-05-01" `
+        --query name `
+        --output tsv
+
+    if ($LASTEXITCODE -ne 0 -or $foundProduct -ne $productName) {
+        throw "APIM product '$productName' was not found."
+    }
+}
+
+$diagnosticMetrics = az rest `
+    --method get `
+    --url "$apimId/diagnostics/applicationinsights?api-version=2024-05-01" `
+    --query properties.metrics `
+    --output tsv
+
+if ($LASTEXITCODE -ne 0 -or $diagnosticMetrics -ne 'true') {
+    throw 'APIM Application Insights diagnostic is missing or does not have custom metrics enabled.'
+}
+
 Write-Host 'Deployed environment resource checks passed.'
 

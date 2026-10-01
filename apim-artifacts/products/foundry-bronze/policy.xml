@@ -1,0 +1,18 @@
+<policies>
+  <inbound>
+    <base />
+    <llm-token-limit counter-key='@("foundry-bronze:" + (context.Subscription?.Id ?? context.Request.IpAddress))' tokens-per-minute="{{tier-bronze-tokens-per-minute}}" token-quota="{{tier-bronze-token-quota}}" token-quota-period="Daily" estimate-prompt-tokens="false" retry-after-header-name="Retry-After" remaining-quota-tokens-header-name="X-Foundry-Remaining-Quota-Tokens" remaining-tokens-header-name="X-Foundry-Remaining-Tokens" tokens-consumed-header-name="X-Foundry-Tokens-Consumed" />
+  </inbound>
+  <backend>
+    <base />
+  </backend>
+  <outbound>
+    <base />
+    <set-header name="X-Foundry-Tier" exists-action="override">
+      <value>bronze</value>
+    </set-header>
+  </outbound>
+  <on-error>
+    <base />
+  </on-error>
+</policies>

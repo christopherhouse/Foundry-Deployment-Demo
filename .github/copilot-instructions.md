@@ -30,8 +30,11 @@ This repository is a two-environment Microsoft Foundry and Azure API Management 
 - GitHub deployment identities receive `Contributor` and `User Access Administrator` only at their environment resource-group scope.
 - Do not add VNets, private endpoints, or private DNS unless the project scope explicitly changes.
 - Foundry model deployments must remain data-driven through the `modelDeployments` parameter array.
-- Bicep owns resource groups, Foundry resources/projects/deployments, APIM service instances, managed identities, and RBAC.
+- Bicep owns resource groups, Foundry resources/projects/deployments, APIM service instances, managed identities, RBAC, Log Analytics, Application Insights, and the APIM Application Insights logger and diagnostic.
 - APIOps owns APIM APIs, specifications, backends, named values, products, associations, and policies.
+- The APIM logger and diagnostic are the only APIM children Bicep owns, because the logger needs the Application Insights connection string. Keep `loggers` and `diagnostics` empty in `apiops/configuration.extractor.yaml`.
+- Product token budgets belong in `tier-<tier>-tokens-per-minute` and `tier-<tier>-token-quota` named values with dev/prod overrides, never hard-coded in a policy. Bronze < silver < gold must hold in every override file.
+- APIM subscriptions hold secrets and are never APIOps artifacts. Create them with `scripts/New-TierSubscription.ps1`.
 - Never define the same APIM child resource in both Bicep and `apim-artifacts/`.
 
 ## Security

@@ -61,6 +61,15 @@ jobs:
             --template-file ./infra/main.bicep \
             --parameters ./infra/environments/dev.bicepparam
 
+      # Creating or updating APIM can exceed the lifetime of the OIDC-derived Azure CLI token,
+      # which the APIOps CLI reuses through DefaultAzureCredential. Re-authenticate first.
+      - name: Refresh Azure login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
       - name: Dry run dev APIOps
         run: |
           npx apiops publish \
@@ -130,6 +139,15 @@ jobs:
             --resource-group "${{ vars.APIM_RESOURCE_GROUP }}" \
             --template-file ./infra/main.bicep \
             --parameters ./infra/environments/prod.bicepparam
+
+      # Creating or updating APIM can exceed the lifetime of the OIDC-derived Azure CLI token,
+      # which the APIOps CLI reuses through DefaultAzureCredential. Re-authenticate first.
+      - name: Refresh Azure login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Dry run prod APIOps
         run: |

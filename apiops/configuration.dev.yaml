@@ -9,3 +9,23 @@ namedValues:
     properties:
       value: "30"
 
+  # Product tier token limits. Bronze < Silver < Gold.
+  - name: tier-bronze-tokens-per-minute
+    properties:
+      value: "1000"
+  - name: tier-bronze-token-quota
+    properties:
+      value: "50000"
+  - name: tier-silver-tokens-per-minute
+    properties:
+      value: "5000"
+  - name: tier-silver-token-quota
+    properties:
+      value: "250000"
+  - name: tier-gold-tokens-per-minute
+    properties:
+      value: "20000"
+  - name: tier-gold-token-quota
+    properties:
+      value: "1000000"
+
