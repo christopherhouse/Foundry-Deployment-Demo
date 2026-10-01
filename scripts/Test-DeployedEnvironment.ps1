@@ -176,13 +176,28 @@ foreach ($namedValueName in @('entra-tenant-id', 'agent-client-application-id', 
     }
 }
 
-$apiPolicy = az rest `
-    --method get `
-    --url "$apimId/apis/foundry-openai-v1/policies/policy?api-version=2024-05-01&format=rawxml" `
-    --query properties.value `
+$managementToken = az account get-access-token `
+    --resource 'https://management.azure.com/' `
+    --query accessToken `
     --output tsv
 
-if ($LASTEXITCODE -ne 0 -or -not ($apiPolicy -match '<validate-azure-ad-token')) {
+if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($managementToken)) {
+    throw 'Unable to acquire an Azure Resource Manager access token for APIM policy verification.'
+}
+
+try {
+    $policyResponse = Invoke-WebRequest `
+        -Uri "https://management.azure.com$apimId/apis/foundry-openai-v1/policies/policy?api-version=2024-05-01&format=rawxml" `
+        -Headers @{ Authorization = "Bearer $managementToken" } `
+        -UseBasicParsing
+
+    $apiPolicy = ($policyResponse.Content | ConvertFrom-Json).properties.value
+}
+finally {
+    $managementToken = $null
+}
+
+if ([string]::IsNullOrWhiteSpace($apiPolicy) -or -not ($apiPolicy -match '<validate-azure-ad-token')) {
     throw 'The Foundry API policy is missing Microsoft Entra token validation.'
 }
 
