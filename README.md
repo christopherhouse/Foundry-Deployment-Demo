@@ -96,6 +96,21 @@ param modelDeployments = [
 
 Create a pull request with the parameter change. The infrastructure workflows validate it, deploy it to dev after merge, and require approval before prod.
 
+## Grant Foundry data plane access
+
+Foundry disables local auth, so direct data plane access is granted through RBAC. Add the principal's Entra object ID to the `foundryDataPlaneAdmins` array in the environment `.bicepparam`:
+
+```bicep
+param foundryDataPlaneAdmins = [
+  {
+    principalId: '00000000-0000-0000-0000-000000000000'
+    principalType: 'User'
+  }
+]
+```
+
+Each entry receives `Cognitive Services OpenAI Contributor` and `Foundry User` at the Foundry account scope, which together give full data plane access to inference, fine-tuning, deployments, and Foundry project resources. Get your object ID with `az ad signed-in-user show --query id -o tsv`. See [Architecture and ownership](docs/architecture.md) for details.
+
 ## Documentation
 
 - [Project charter](docs/project-charter.md)
