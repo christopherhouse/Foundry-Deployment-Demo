@@ -95,6 +95,7 @@ jobs:
           ./scripts/Test-DeployedEnvironment.ps1 `
             -ResourceGroupName "${{ vars.APIM_RESOURCE_GROUP }}" `
             -FoundryAccountName "${{ vars.FOUNDRY_ACCOUNT_NAME }}" `
+            -ContentSafetyAccountName "${{ vars.CONTENT_SAFETY_ACCOUNT_NAME }}" `
             -ApimServiceName "${{ vars.APIM_SERVICE_NAME }}"
 
   release-prod:
@@ -174,4 +175,5 @@ jobs:
           ./scripts/Test-DeployedEnvironment.ps1 `
             -ResourceGroupName "${{ vars.APIM_RESOURCE_GROUP }}" `
             -FoundryAccountName "${{ vars.FOUNDRY_ACCOUNT_NAME }}" `
+            -ContentSafetyAccountName "${{ vars.CONTENT_SAFETY_ACCOUNT_NAME }}" `
             -ApimServiceName "${{ vars.APIM_SERVICE_NAME }}"

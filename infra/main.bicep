@@ -38,6 +38,9 @@ param foundryAccountName string
 @description('Foundry project name.')
 param foundryProjectName string
 
+@description('Globally unique Azure AI Content Safety account name.')
+param contentSafetyAccountName string
+
 @description('Globally unique API Management service name.')
 param apimServiceName string
 
@@ -92,6 +95,16 @@ module monitoring './modules/monitoring.bicep' = {
   }
 }
 
+module contentSafety './modules/content-safety.bicep' = {
+  name: 'content-safety-${environmentName}-${moduleDeploymentSuffix}'
+  params: {
+    accountName: contentSafetyAccountName
+    location: location
+    logAnalyticsWorkspaceId: monitoring.outputs.workspaceId
+    tags: tags
+  }
+}
+
 module apim './modules/apim.bicep' = {
   name: 'apim-${environmentName}-${moduleDeploymentSuffix}'
   params: {
@@ -108,9 +121,11 @@ module apim './modules/apim.bicep' = {
 module foundryAccess './modules/role-assignments.bicep' = {
   name: 'foundry-access-${environmentName}-${moduleDeploymentSuffix}'
   dependsOn: [
+    contentSafety
     foundry
   ]
   params: {
+    contentSafetyAccountName: contentSafetyAccountName
     foundryAccountName: foundryAccountName
     principalId: apim.outputs.principalId
     dataPlaneAdmins: foundryDataPlaneAdmins
@@ -124,6 +139,8 @@ output foundryEndpoint string = foundry.outputs.endpoint
 output foundryOpenAiEndpoint string = foundry.outputs.openAiEndpoint
 output foundryProjectId string = foundry.outputs.projectId
 output modelDeploymentNames array = foundry.outputs.modelDeploymentNames
+output contentSafetyAccountId string = contentSafety.outputs.accountId
+output contentSafetyEndpoint string = contentSafety.outputs.endpoint
 output apimServiceId string = apim.outputs.serviceId
 output apimGatewayUrl string = apim.outputs.gatewayUrl
 output logAnalyticsWorkspaceId string = monitoring.outputs.workspaceId

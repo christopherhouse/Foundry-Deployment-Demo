@@ -7,6 +7,9 @@ param(
     [string]$FoundryAccountName,
 
     [Parameter(Mandatory = $true)]
+    [string]$ContentSafetyAccountName,
+
+    [Parameter(Mandatory = $true)]
     [string]$ApimServiceName
 )
 
@@ -74,6 +77,22 @@ if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($foundryId)) {
     throw 'Foundry account was not found.'
 }
 
+$contentSafetyJson = az cognitiveservices account show `
+    --resource-group $ResourceGroupName `
+    --name $ContentSafetyAccountName `
+    --output json
+
+if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($contentSafetyJson)) {
+    throw 'Azure AI Content Safety account was not found.'
+}
+
+$contentSafety = $contentSafetyJson | ConvertFrom-Json
+if ($contentSafety.kind -ne 'ContentSafety' -or $contentSafety.properties.disableLocalAuth -ne $true) {
+    throw 'Azure AI Content Safety must use kind ContentSafety with local authentication disabled.'
+}
+
+$contentSafetyId = $contentSafety.id
+
 $foundryProjectIds = @(az rest `
     --method get `
     --url "$foundryId/projects?api-version=2025-06-01" `
@@ -96,6 +115,26 @@ if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($apimId)) {
     throw 'API Management service was not found.'
 }
 
+$apimPrincipalId = az apim show `
+    --resource-group $ResourceGroupName `
+    --name $ApimServiceName `
+    --query identity.principalId `
+    --output tsv
+
+if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($apimPrincipalId)) {
+    throw 'API Management system-assigned identity was not found.'
+}
+
+$contentSafetyRoleCount = az role assignment list `
+    --scope $contentSafetyId `
+    --assignee-object-id $apimPrincipalId `
+    --query "[?roleDefinitionName == 'Cognitive Services User'] | length(@)" `
+    --output tsv
+
+if ($LASTEXITCODE -ne 0 -or [int]$contentSafetyRoleCount -ne 1) {
+    throw 'APIM does not have Cognitive Services User on the Content Safety account.'
+}
+
 $apiName = az rest `
     --method get `
     --url "$apimId/apis/foundry-openai-v1?api-version=2024-05-01" `
@@ -104,6 +143,25 @@ $apiName = az rest `
 
 if ($LASTEXITCODE -ne 0 -or $apiName -ne 'foundry-openai-v1') {
     throw 'Foundry APIM API was not found.'
+}
+
+$contentSafetyBackendJson = az rest `
+    --method get `
+    --url "$apimId/backends/content-safety-backend?api-version=2024-05-01" `
+    --output json
+
+if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($contentSafetyBackendJson)) {
+    throw 'APIM Content Safety backend was not found.'
+}
+
+$contentSafetyBackend = $contentSafetyBackendJson | ConvertFrom-Json
+$expectedContentSafetyUrl = "https://$ContentSafetyAccountName.cognitiveservices.azure.com"
+if ($contentSafetyBackend.properties.url -ne $expectedContentSafetyUrl) {
+    throw "APIM Content Safety backend URL does not match '$expectedContentSafetyUrl'."
+}
+
+if ($contentSafetyBackend.properties.credentials.managedIdentity.resource -ne 'https://cognitiveservices.azure.com') {
+    throw 'APIM Content Safety backend does not use managed identity authentication.'
 }
 
 foreach ($namedValueName in @('entra-tenant-id', 'agent-client-application-id', 'agent-token-audience')) {
@@ -126,6 +184,15 @@ $apiPolicy = az rest `
 
 if ($LASTEXITCODE -ne 0 -or -not ($apiPolicy -match '<validate-azure-ad-token')) {
     throw 'The Foundry API policy is missing Microsoft Entra token validation.'
+}
+
+if (
+    $apiPolicy -notmatch '<llm-content-safety' -or
+    $apiPolicy -notmatch 'backend-id="content-safety-backend"' -or
+    $apiPolicy -notmatch 'shield-prompt="true"' -or
+    $apiPolicy -notmatch 'enforce-on-completions="true"'
+) {
+    throw 'The Foundry API policy is missing balanced Content Safety enforcement.'
 }
 
 foreach ($productName in @('foundry-demo', 'foundry-bronze', 'foundry-silver', 'foundry-gold')) {
@@ -158,6 +225,11 @@ Test-ResourceDiagnosticSetting `
 Test-ResourceDiagnosticSetting `
     -ResourceId $foundryProjectId `
     -SettingName 'foundry-project-to-log-analytics' `
+    -ExpectedWorkspaceId $workspaceId
+
+Test-ResourceDiagnosticSetting `
+    -ResourceId $contentSafetyId `
+    -SettingName 'content-safety-to-log-analytics' `
     -ExpectedWorkspaceId $workspaceId
 
 Test-ResourceDiagnosticSetting `

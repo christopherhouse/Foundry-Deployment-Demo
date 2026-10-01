@@ -26,6 +26,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | P9.1 | Governance | Add Log Analytics and Application Insights with service diagnostics | P8.3 | Done | Each environment has a dedicated workspace and component; Foundry accounts/projects and APIM send all resource logs and metrics to the workspace; the APIM Application Insights diagnostic has `metrics: true` |
 | P9.2 | Governance | Add bronze/silver/gold products with tiered token limits | P9.1 | Done | Each product publishes the Foundry API and enforces its own `llm-token-limit` rate limit and daily quota |
 | P9.3 | Governance | Emit token metrics from the Foundry API policy | P9.1 | Done | `llm-emit-token-metric` reports token consumption with API, operation, product, and subscription dimensions |
+| P9.4 | Governance | Enforce AI Content Safety on prompts and completions | P9.3 | Done | Dedicated dev/prod Content Safety accounts use managed identity; APIM blocks prompt attacks and severity 4+ harm content before or after inference |
 | P10.1 | Agents | Add Microsoft Entra caller validation at APIM | P9.3 | Done | APIM validates tenant, audience, and Azure CLI client application before metering requests |
 | P10.2 | Agents | Add two unattended .NET 10 model consumers | P10.1 | Done | Bronze ticket triage and gold market brief agents call `gpt-5-6-luna` with no tools or external services |
 | P10.3 | Agents | Add bounded `Retry-After` handling and token reporting | P10.2 | Done | Both agents honor APIM retry guidance and report SDK usage plus APIM tier headers independently |
@@ -59,6 +60,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | 2026-10-01 | Honor `Retry-After` with bounded waits | The bronze demo makes throttling visible while attempt, delay, and total-wait caps keep unattended runs finite |
 | 2026-10-01 | Route Foundry account/project and APIM `allLogs` plus `AllMetrics` to Log Analytics | Category groups avoid an incomplete static list, resource-specific tables improve queryability, and both environments use their existing dedicated workspace |
 | 2026-10-01 | Use local gateway profiles for the demo agents | A validated active `.env` keeps secrets uncommitted while allowing one-command switching between Foundry APIM with Entra and an externally managed AI Gateway with per-agent API keys |
+| 2026-10-01 | Use dedicated Content Safety accounts with balanced request and response filtering | Environment isolation, managed identity, prompt-shield detection, and explicit severity-4 thresholds add safety governance without introducing keys |
 
 ## Risks
 

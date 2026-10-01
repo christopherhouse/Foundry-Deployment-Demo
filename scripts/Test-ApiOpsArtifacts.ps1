@@ -10,6 +10,7 @@ $requiredFiles = @(
     'apis\foundry-openai-v1\specification.yaml',
     'apis\foundry-openai-v1\policy.xml',
     'backends\foundry-backend\backendInformation.json',
+    'backends\content-safety-backend\backendInformation.json',
     'namedValues\foundry-api-audience\namedValueInformation.json',
     'namedValues\foundry-rate-limit-calls\namedValueInformation.json',
     'namedValues\entra-tenant-id\namedValueInformation.json',
@@ -105,6 +106,23 @@ if ($apiPolicy -notmatch '<validate-azure-ad-token') {
     throw 'The Foundry API policy must validate Microsoft Entra access tokens.'
 }
 
+if ($apiPolicy -notmatch '<llm-content-safety') {
+    throw 'The Foundry API policy must enforce Azure AI Content Safety checks.'
+}
+
+foreach ($attribute in @('backend-id="content-safety-backend"', 'shield-prompt="true"', 'enforce-on-completions="true"')) {
+    if ($apiPolicy -notmatch [regex]::Escape($attribute)) {
+        throw "The Foundry API content safety policy must include '$attribute'."
+    }
+}
+
+foreach ($category in @('Hate', 'SelfHarm', 'Sexual', 'Violence')) {
+    $categoryPattern = '<category\s+name="' + $category + '"\s+threshold="4"\s*/>'
+    if ($apiPolicy -notmatch $categoryPattern) {
+        throw "The Foundry API content safety policy must block '$category' at severity 4 or higher."
+    }
+}
+
 foreach ($token in @('{{entra-tenant-id}}', '{{agent-client-application-id}}', '{{agent-token-audience}}')) {
     if ($apiPolicy -notmatch [regex]::Escape($token)) {
         throw "The Foundry API policy must reference named value '$token'."
@@ -113,6 +131,14 @@ foreach ($token in @('{{entra-tenant-id}}', '{{agent-client-application-id}}', '
 
 if ($apiPolicy.IndexOf('<validate-azure-ad-token') -gt $apiPolicy.IndexOf('<base />')) {
     throw 'Microsoft Entra token validation must run before inherited product policies.'
+}
+
+if ($apiPolicy.IndexOf('<validate-azure-ad-token') -gt $apiPolicy.IndexOf('<llm-content-safety')) {
+    throw 'Microsoft Entra token validation must run before content safety analysis.'
+}
+
+if ($apiPolicy.IndexOf('<llm-content-safety') -gt $apiPolicy.IndexOf('<base />')) {
+    throw 'Content safety analysis must run before inherited product token limits.'
 }
 
 if ($apiPolicy.IndexOf('<validate-azure-ad-token') -gt $apiPolicy.IndexOf('<llm-emit-token-metric')) {
@@ -145,6 +171,10 @@ $repoOverrides = Get-ChildItem -Path (Join-Path $repoRoot 'apiops') -Filter 'con
 $entraNamedValues = @('entra-tenant-id', 'agent-client-application-id', 'agent-token-audience')
 foreach ($override in $repoOverrides) {
     $text = Get-Content -LiteralPath $override.FullName -Raw
+    if ($text -notmatch 'name:\s*content-safety-backend\s*\r?\n\s*properties:\s*\r?\n\s*url:\s*"https://[^"]+\.cognitiveservices\.azure\.com"') {
+        throw "Override '$($override.Name)' is missing the Content Safety backend URL."
+    }
+
     foreach ($name in $entraNamedValues) {
         $pattern = 'name:\s*' + [regex]::Escape($name) + '\s*\r?\n\s*properties:\s*\r?\n\s*value:\s*"[^"]+"'
         if ($text -notmatch $pattern) {

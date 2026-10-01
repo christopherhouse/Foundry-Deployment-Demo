@@ -31,7 +31,7 @@ This repository is a two-environment Microsoft Foundry and Azure API Management 
 - Do not add VNets, private endpoints, or private DNS unless the project scope explicitly changes.
 - Foundry model deployments must remain data-driven through the `modelDeployments` parameter array.
 - Foundry data plane access for humans and automation must remain data-driven through the `foundryDataPlaneAdmins` parameter array; never hand-add a portal role assignment.
-- Bicep owns resource groups, Foundry resources/projects/deployments, APIM service instances, managed identities, RBAC, Log Analytics, Application Insights, Foundry/APIM Azure Monitor diagnostic settings, and the APIM Application Insights logger and diagnostic.
+- Bicep owns resource groups, Foundry resources/projects/deployments, Azure AI Content Safety resources, APIM service instances, managed identities, RBAC, Log Analytics, Application Insights, Foundry/Content Safety/APIM Azure Monitor diagnostic settings, and the APIM Application Insights logger and diagnostic.
 - The external AI Gateway preview resource used by the demo is configuration-only in this repository; do not add infrastructure management for it unless the project scope explicitly changes.
 - Foundry account, Foundry project, and APIM diagnostic settings must route `allLogs` and `AllMetrics` to the environment Log Analytics workspace with resource-specific tables.
 - APIOps owns APIM APIs, specifications, backends, named values, products, associations, and policies.
@@ -44,6 +44,7 @@ This repository is a two-environment Microsoft Foundry and Azure API Management 
 
 - Use GitHub OIDC and managed identities. Never introduce service-principal secrets, API keys, Foundry keys, or APIM subscription keys.
 - APIM authenticates to Foundry with its managed identity and the `Cognitive Services OpenAI User` role.
+- APIM authenticates to Azure AI Content Safety with its managed identity and the `Cognitive Services User` role.
 - Keep `disableLocalAuth: true` on Foundry unless a documented requirement changes.
 - Do not add `--delete-unmatched` to APIOps publishing without an explicit, reviewed decision.
 

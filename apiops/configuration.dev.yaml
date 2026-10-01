@@ -3,6 +3,9 @@ backends:
   - name: foundry-backend
     properties:
       url: "https://foundrydeploydemo-dev-ch.openai.azure.com/openai/v1"
+  - name: content-safety-backend
+    properties:
+      url: "https://cs-foundrydeploydemo-dev-ch.cognitiveservices.azure.com"
 
 namedValues:
   - name: foundry-rate-limit-calls
@@ -39,4 +42,3 @@ namedValues:
   - name: tier-gold-token-quota
     properties:
       value: "1000000"
-

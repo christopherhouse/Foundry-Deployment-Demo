@@ -120,6 +120,8 @@ $devResourceGroupName = Get-BicepStringParameter -Path $devParameters -Name 'res
 $prodResourceGroupName = Get-BicepStringParameter -Path $prodParameters -Name 'resourceGroupName'
 $devFoundryAccountName = Get-BicepStringParameter -Path $devParameters -Name 'foundryAccountName'
 $prodFoundryAccountName = Get-BicepStringParameter -Path $prodParameters -Name 'foundryAccountName'
+$devContentSafetyAccountName = Get-BicepStringParameter -Path $devParameters -Name 'contentSafetyAccountName'
+$prodContentSafetyAccountName = Get-BicepStringParameter -Path $prodParameters -Name 'contentSafetyAccountName'
 $devApimServiceName = Get-BicepStringParameter -Path $devParameters -Name 'apimServiceName'
 $prodApimServiceName = Get-BicepStringParameter -Path $prodParameters -Name 'apimServiceName'
 
@@ -231,6 +233,7 @@ if (-not $SkipGitHubConfiguration) {
             ClientId = $deploymentOutputs.devIdentityClientId.value
             ResourceGroup = $devResourceGroupName
             FoundryAccount = $devFoundryAccountName
+            ContentSafetyAccount = $devContentSafetyAccountName
             ApimService = $devApimServiceName
         },
         @{
@@ -238,6 +241,7 @@ if (-not $SkipGitHubConfiguration) {
             ClientId = $deploymentOutputs.prodIdentityClientId.value
             ResourceGroup = $prodResourceGroupName
             FoundryAccount = $prodFoundryAccountName
+            ContentSafetyAccount = $prodContentSafetyAccountName
             ApimService = $prodApimServiceName
         }
     )
@@ -256,6 +260,7 @@ if (-not $SkipGitHubConfiguration) {
             DEPLOYMENT_LOCATION = $DeploymentLocation
             APIM_RESOURCE_GROUP = $settings.ResourceGroup
             APIM_SERVICE_NAME = $settings.ApimService
+            CONTENT_SAFETY_ACCOUNT_NAME = $settings.ContentSafetyAccount
             FOUNDRY_ACCOUNT_NAME = $settings.FoundryAccount
         }
 

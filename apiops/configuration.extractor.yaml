@@ -3,6 +3,7 @@ apis:
   - foundry-openai-v1
 backends:
   - foundry-backend
+  - content-safety-backend
 namedValues:
   - foundry-api-audience
   - foundry-rate-limit-calls
@@ -33,4 +34,3 @@ policies: []
 policyRestrictions: []
 documentations: []
 workspaces: []
-
