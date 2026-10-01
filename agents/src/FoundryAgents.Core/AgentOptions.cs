@@ -21,6 +21,7 @@ public sealed record AgentOptions(
     string GatewayKey,
     string KeyHeader,
     string AgentLabel,
+    bool UseLowReasoningEffort,
     int RetryMaxAttempts,
     TimeSpan RetryMaxDelay,
     TimeSpan RetryTotalBudget)
@@ -63,6 +64,7 @@ public sealed record AgentOptions(
             AgentLabel: Environment.GetEnvironmentVariable(labelVariable) is { Length: > 0 } label
                 ? label
                 : defaultLabel,
+            UseLowReasoningEffort: ResolveLowReasoningEffort(authMode),
             RetryMaxAttempts: PositiveInt("AGENT_RETRY_MAX_ATTEMPTS", 5),
             RetryMaxDelay: TimeSpan.FromSeconds(PositiveInt("AGENT_RETRY_MAX_DELAY_SECONDS", 90)),
             RetryTotalBudget: TimeSpan.FromSeconds(PositiveInt("AGENT_RETRY_TOTAL_BUDGET_SECONDS", 180)));
@@ -84,6 +86,7 @@ public sealed record AgentOptions(
             GatewayKey: Required(subscriptionKeyVariable),
             KeyHeader: "Ocp-Apim-Subscription-Key",
             AgentLabel: label,
+            UseLowReasoningEffort: true,
             RetryMaxAttempts: PositiveInt("FOUNDRY_RETRY_MAX_ATTEMPTS", 5),
             RetryMaxDelay: TimeSpan.FromSeconds(PositiveInt("FOUNDRY_RETRY_MAX_DELAY_SECONDS", 90)),
             RetryTotalBudget: TimeSpan.FromSeconds(PositiveInt("FOUNDRY_RETRY_TOTAL_BUDGET_SECONDS", 180)));
@@ -115,6 +118,23 @@ public sealed record AgentOptions(
         return int.TryParse(value, out int parsed) && parsed > 0
             ? parsed
             : throw new InvalidOperationException($"Environment variable '{name}' must be a positive integer.");
+    }
+
+    private static bool ResolveLowReasoningEffort(GatewayAuthMode authMode)
+    {
+        string? value = Environment.GetEnvironmentVariable("AGENT_REASONING_EFFORT");
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return authMode == GatewayAuthMode.EntraPlusKey;
+        }
+
+        return value.ToLowerInvariant() switch
+        {
+            "low" => true,
+            "none" => false,
+            _ => throw new InvalidOperationException(
+                "Environment variable 'AGENT_REASONING_EFFORT' must be 'low' or 'none'.")
+        };
     }
 
     private static Uri NormalizeEndpoint(string value, string variableName)

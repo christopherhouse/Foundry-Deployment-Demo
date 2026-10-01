@@ -3,14 +3,14 @@
 Creates and optionally activates the local AI Gateway agent profile.
 
 .DESCRIPTION
-Writes the AI Gateway URL, model, and two securely prompted API keys to the
-gitignored agents\profiles\ai-gateway.env.local file.
+Writes the AI Gateway URL, exact registered model alias, and two securely prompted
+API keys to the gitignored agents\profiles\ai-gateway.env.local file.
 #>
 [CmdletBinding()]
 param(
     [string]$BaseUrl = 'https://astral-spring-2206.azure-api.net/default/models/openai/v1',
 
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $true, HelpMessage = 'Exact model name registered under AI Gateway Models (preview).')]
     [string]$Model,
 
     [System.Security.SecureString]$TriageApiKey,
@@ -75,6 +75,7 @@ $settings = @(
     'AGENT_KEY_HEADER=api-key'
     'AGENT_TRIAGE_LABEL=ticket'
     'AGENT_MARKET_LABEL=market'
+    'AGENT_REASONING_EFFORT=none'
     "AGENT_TRIAGE_GATEWAY_KEY=$triageKey"
     "AGENT_MARKET_GATEWAY_KEY=$marketKey"
     'AGENT_RETRY_MAX_ATTEMPTS=5'

@@ -123,6 +123,10 @@ if ($authMode -eq 'entra-plus-key') {
     Get-RequiredSetting -Settings $settings -Name 'AGENT_TOKEN_SCOPE' | Out-Null
 }
 
+if ($settings.ContainsKey('AGENT_REASONING_EFFORT') -and $settings['AGENT_REASONING_EFFORT'] -notin @('low', 'none')) {
+    throw "Agent profile setting 'AGENT_REASONING_EFFORT' must be 'low' or 'none'."
+}
+
 foreach ($name in @(
     'AGENT_RETRY_MAX_ATTEMPTS',
     'AGENT_RETRY_MAX_DELAY_SECONDS',

@@ -67,6 +67,7 @@ $settings = @(
     "AGENT_TOKEN_SCOPE=$($app.Scope)"
     'AGENT_TRIAGE_LABEL=bronze'
     'AGENT_MARKET_LABEL=gold'
+    'AGENT_REASONING_EFFORT=low'
     "AGENT_TRIAGE_GATEWAY_KEY=$bronzeKey"
     "AGENT_MARKET_GATEWAY_KEY=$goldKey"
     'AGENT_RETRY_MAX_ATTEMPTS=5'

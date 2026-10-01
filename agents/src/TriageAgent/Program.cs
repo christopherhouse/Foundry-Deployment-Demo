@@ -23,16 +23,21 @@ try
 {
     foreach (Ticket ticket in tickets)
     {
+        ChatCompletionOptions completionOptions = new()
+        {
+            MaxOutputTokenCount = 700
+        };
+        if (options.UseLowReasoningEffort)
+        {
+            completionOptions.ReasoningEffortLevel = ChatReasoningEffortLevel.Low;
+        }
+
         ClientResult<ChatCompletion> result = await client.CompleteChatAsync(
             [
                 new SystemChatMessage("You triage synthetic software support tickets. Return only compact JSON with string properties severity, category, and reply. Severity must be low, medium, high, or critical. Keep reply below 80 words."),
                 new UserChatMessage(JsonSerializer.Serialize(ticket))
             ],
-            new ChatCompletionOptions
-            {
-                MaxOutputTokenCount = 700,
-                ReasoningEffortLevel = ChatReasoningEffortLevel.Low
-            });
+            completionOptions);
 
         report.Record(result.Value, result.GetRawResponse());
         string output = string.Concat(result.Value.Content.Select(part => part.Text));

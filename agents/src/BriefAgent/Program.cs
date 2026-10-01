@@ -60,13 +60,18 @@ finally
 
 async Task<string> Complete(string instruction, string content, int maxOutputTokens)
 {
+    ChatCompletionOptions completionOptions = new()
+    {
+        MaxOutputTokenCount = maxOutputTokens
+    };
+    if (options.UseLowReasoningEffort)
+    {
+        completionOptions.ReasoningEffortLevel = ChatReasoningEffortLevel.Low;
+    }
+
     ClientResult<ChatCompletion> result = await client.CompleteChatAsync(
         [new SystemChatMessage(instruction), new UserChatMessage(content)],
-        new ChatCompletionOptions
-        {
-            MaxOutputTokenCount = maxOutputTokens,
-            ReasoningEffortLevel = ChatReasoningEffortLevel.Low
-        });
+        completionOptions);
 
     report.Record(result.Value, result.GetRawResponse());
     return string.Concat(result.Value.Content.Select(part => part.Text));

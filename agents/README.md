@@ -14,7 +14,7 @@ Each profile carries its own OpenAI-compatible base URL and model deployment nam
 .\scripts\Initialize-AgentDemo.ps1
 
 # Securely prompts for two AI Gateway API keys and activates the profile
-.\scripts\Initialize-AiGatewayAgentProfile.ps1 -Model '<ai-gateway-model>'
+.\scripts\Initialize-AiGatewayAgentProfile.ps1 -Model '<registered-model-alias>'
 ```
 
 The AI Gateway profile defaults to:
@@ -24,6 +24,8 @@ https://astral-spring-2206.azure-api.net/default/models/openai/v1
 ```
 
 Both local profile files and the generated `agents\.env` are ignored by Git.
+
+Use the exact model name shown under AI Gateway **Models (preview)**, including any provider or account prefix. For example: `foundrydeploydemo-dev-ch/gpt-4o-mini`.
 
 ## Switch and run
 

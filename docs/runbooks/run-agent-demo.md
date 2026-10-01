@@ -9,6 +9,8 @@ The demo runs two unattended .NET 10 console agents through a selectable local g
 
 The `foundry-apim` profile uses Microsoft Entra ID plus separate product-scoped APIM subscription keys. The `ai-gateway` profile uses separate `api-key` values for the two agents and does not acquire or send an Entra token.
 
+Profiles also control optional model features. The Foundry APIM profile sends low reasoning effort for its GPT-5.6 deployment, while the AI Gateway profile omits `reasoning_effort` for `gpt-4o-mini`.
+
 ## Prerequisites
 
 - The selected OpenAI-compatible gateway and model deployment are available.
@@ -38,7 +40,7 @@ No application secret, Foundry key, or APIM key is committed.
 Run:
 
 ```powershell
-.\scripts\Initialize-AiGatewayAgentProfile.ps1 -Model '<ai-gateway-model-deployment>'
+.\scripts\Initialize-AiGatewayAgentProfile.ps1 -Model '<registered-model-alias>'
 ```
 
 The script defaults the base URL to:
@@ -48,6 +50,8 @@ https://astral-spring-2206.azure-api.net/default/models/openai/v1
 ```
 
 It securely prompts for the Ticket Triage Agent API key and Market Brief Analyst API key, writes them to gitignored `agents\profiles\ai-gateway.env.local`, and activates the profile. The API keys are sent through the `api-key` header. The AI Gateway profile does not request or send an Entra bearer token.
+
+The model argument must exactly match the name registered under AI Gateway **Models (preview)**, not only the underlying model family. A Foundry-backed registration can include the account prefix, for example `foundrydeploydemo-dev-ch/gpt-4o-mini`.
 
 Use `-BaseUrl` to override the endpoint. For non-interactive local automation, pass `SecureString` values through `-TriageApiKey` and `-MarketApiKey`; do not put plaintext keys in shell command history.
 
