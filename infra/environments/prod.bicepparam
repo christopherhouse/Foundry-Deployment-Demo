@@ -69,6 +69,20 @@ param modelDeployments = [
     }
     versionUpgradeOption: 'NoAutoUpgrade'
   }
+  // Catalog retirement for inference is scheduled for 2028-01-11.
+  {
+    name: 'gpt-5-6-terra'
+    model: {
+      format: 'OpenAI'
+      name: 'gpt-5.6-terra'
+      version: '2026-07-09'
+    }
+    sku: {
+      name: 'DataZoneStandard'
+      capacity: 100
+    }
+    versionUpgradeOption: 'NoAutoUpgrade'
+  }
   {
     name: 'text-embedding-3-large'
     model: {
