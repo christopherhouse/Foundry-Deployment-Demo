@@ -69,6 +69,15 @@ param modelDeployments = [
   }
 ]
 
+// Entra object IDs granted Cognitive Services OpenAI Contributor and Foundry User
+// on the Foundry account for full data plane access.
+param foundryDataPlaneAdmins = [
+  {
+    principalId: 'fbe4845f-3ca2-4bc0-b2bd-e6f2dc79f2ae'
+    principalType: 'User'
+  }
+]
+
 param tags = {
   Application: 'FoundryDeploymentDemo'
   Environment: 'prod'

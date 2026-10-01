@@ -14,6 +14,11 @@ type ModelDeployment = {
   versionUpgradeOption: 'OnceNewDefaultVersionAvailable' | 'OnceCurrentVersionExpired' | 'NoAutoUpgrade'
 }
 
+type FoundryDataPlaneAdmin = {
+  principalId: string
+  principalType: 'User' | 'Group' | 'ServicePrincipal'
+}
+
 @description('Short environment name.')
 @allowed([
   'dev'
@@ -55,6 +60,9 @@ param logAnalyticsRetentionInDays int = 30
 
 @description('Foundry model deployments for this environment.')
 param modelDeployments ModelDeployment[] = []
+
+@description('Principals granted full Foundry data plane access in this environment.')
+param foundryDataPlaneAdmins FoundryDataPlaneAdmin[] = []
 
 @description('Tags applied to deployed resources.')
 param tags object = {}
@@ -105,6 +113,7 @@ module foundryAccess './modules/role-assignments.bicep' = {
   params: {
     foundryAccountName: foundryAccountName
     principalId: apim.outputs.principalId
+    dataPlaneAdmins: foundryDataPlaneAdmins
   }
 }
 

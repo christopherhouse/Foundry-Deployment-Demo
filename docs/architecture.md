@@ -26,6 +26,7 @@ The environments use public endpoints and no virtual networks.
 | Foundry account/project and APIM Azure Monitor diagnostic settings | Bicep |
 | APIM Application Insights logger and diagnostic | Bicep |
 | APIM-to-Foundry RBAC | Bicep |
+| Foundry data plane administrator RBAC | Bicep |
 | APIM API and OpenAPI contract | APIOps |
 | APIM backend and named values | APIOps |
 | APIM products and associations | APIOps |
@@ -34,6 +35,17 @@ The environments use public endpoints and no virtual networks.
 Do not cross these boundaries. A resource managed by both systems can oscillate or be deleted unexpectedly.
 
 The APIM logger and diagnostic are the deliberate exception to "APIM configuration belongs to APIOps". The logger needs the Application Insights connection string, which Bicep can read from the component in the same resource group without ever writing a secret to the repository. `apiops/configuration.extractor.yaml` keeps `loggers` and `diagnostics` empty so APIOps never manages them.
+
+## Foundry data plane access
+
+Foundry keeps `disableLocalAuth: true`, so every data plane caller authenticates with Microsoft Entra. Human and automation principals that need direct Foundry access are data-driven through the `foundryDataPlaneAdmins` array in each environment `.bicepparam`. `infra/modules/role-assignments.bicep` assigns each entry two roles at the Foundry account scope:
+
+| Role | Role definition ID | Grants |
+|---|---|---|
+| Cognitive Services OpenAI Contributor | `a001fd3d-188f-4b5d-821b-7da978bf7442` | Full OpenAI data plane: inference, fine-tuning, and deployment management |
+| Foundry User | `53ca6127-db72-4b80-b1b0-d745d6d5456d` | Foundry project data actions such as agents, threads, and evaluations, plus reader on the account and project |
+
+Together these are the broadest supported Foundry data plane access without granting subscription or resource-group control plane rights. Add or remove a principal by editing the array only; never hand-add a portal role assignment, because the next deployment will not reconcile it. Each entry carries an explicit `principalType` so assignments do not fail on Microsoft Graph replication delays.
 
 ## Resource diagnostics
 
