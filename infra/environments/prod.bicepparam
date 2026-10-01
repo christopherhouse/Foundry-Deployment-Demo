@@ -13,8 +13,22 @@ param applicationInsightsName = 'appi-foundrydeploydemo-prod'
 param logAnalyticsRetentionInDays = 90
 
 // DataZoneStandard capacity is expressed in thousands of tokens per minute.
-// Model versions and SKU support were verified in West US 3 on 2026-09-22.
+// Model versions and SKU support were verified in West US 3 on 2026-10-01.
 param modelDeployments = [
+  // Catalog retirement for inference is scheduled for 2027-04-14.
+  {
+    name: 'gpt-4o-mini'
+    model: {
+      format: 'OpenAI'
+      name: 'gpt-4o-mini'
+      version: '2024-07-18'
+    }
+    sku: {
+      name: 'DataZoneStandard'
+      capacity: 50
+    }
+    versionUpgradeOption: 'NoAutoUpgrade'
+  }
   {
     name: 'gpt-6-astra'
     model: {
