@@ -24,6 +24,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | P8.3 | Demo | Deploy dev infrastructure and APIOps baseline | P8.2 | Done | Dev infrastructure and the 106-operation v1 APIOps contract are published; `/models`, `/responses`, and `/embeddings` smoke tests pass |
 | P8.4 | Demo | Approve and deploy prod | P8.3 | In progress | Prod smoke tests pass |
 | P8.5 | Demo | Demonstrate model and APIM change CD | P8.4 | In progress | Both change paths and rollback are demonstrated |
+| P8.6 | Demo | Add GPT-5.6 Terra at 100K TPM | P8.3 | Done | Dev and prod define aligned `gpt-5.6-terra` Data Zone Standard deployments using the GA `2026-07-09` version |
 | P9.1 | Governance | Add Log Analytics and Application Insights with service diagnostics | P8.3 | Done | Each environment has a dedicated workspace and component; Foundry accounts/projects and APIM send all resource logs and metrics to the workspace; the APIM Application Insights diagnostic has `metrics: true` |
 | P9.2 | Governance | Add bronze/silver/gold products with tiered token limits | P9.1 | Done | Each product publishes the Foundry API and enforces its own `llm-token-limit` rate limit and daily quota |
 | P9.3 | Governance | Emit token metrics from the Foundry API policy | P9.1 | Done | `llm-emit-token-metric` reports token consumption with API, operation, product, and subscription dimensions |
@@ -63,6 +64,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | 2026-10-01 | Use local gateway profiles for the demo agents | A validated active `.env` keeps secrets uncommitted while allowing one-command switching between Foundry APIM with Entra and an externally managed AI Gateway with per-agent API keys |
 | 2026-10-01 | Use dedicated Content Safety accounts with balanced request and response filtering | Environment isolation, managed identity, prompt-shield detection, and explicit severity-4 thresholds add safety governance without introducing keys |
 | 2026-10-01 | Reconcile APIM portal changes through generated pull requests | Extracting the managed scope into the tracked artifact tree makes the Git delta reviewable while keeping Bicep-owned children and subscription secrets out of APIOps |
+| 2026-10-01 | Add GPT-5.6 Terra at 100K TPM per environment | West US 3 supports Data Zone Standard for version `2026-07-09`, and the two deployments fit within the model-specific 333K TPM subscription quota |
 
 ## Risks
 
