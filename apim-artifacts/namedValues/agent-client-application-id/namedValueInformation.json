@@ -1,7 +1,11 @@
 {
+  "id": "/subscriptions/8043efb5-d046-4aac-abcd-2c1a00e5ab86/resourceGroups/rg-foundrydeploydemo-dev/providers/Microsoft.ApiManagement/service/apim-foundrydeploydemo-dev-ch/namedValues/agent-client-application-id",
+  "type": "Microsoft.ApiManagement/service/namedValues",
+  "name": "agent-client-application-id",
   "properties": {
     "displayName": "agent-client-application-id",
-    "secret": false,
-    "value": "04b07795-8ddb-461a-bbee-02f9e1bf7b46"
+    "value": "04b07795-8ddb-461a-bbee-02f9e1bf7b46",
+    "tags": null,
+    "secret": false
   }
 }

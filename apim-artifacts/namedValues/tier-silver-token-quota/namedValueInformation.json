@@ -1,7 +1,11 @@
 {
+  "id": "/subscriptions/8043efb5-d046-4aac-abcd-2c1a00e5ab86/resourceGroups/rg-foundrydeploydemo-dev/providers/Microsoft.ApiManagement/service/apim-foundrydeploydemo-dev-ch/namedValues/tier-silver-token-quota",
+  "type": "Microsoft.ApiManagement/service/namedValues",
+  "name": "tier-silver-token-quota",
   "properties": {
     "displayName": "tier-silver-token-quota",
-    "secret": false,
-    "value": "250000"
+    "value": "250000",
+    "tags": null,
+    "secret": false
   }
 }

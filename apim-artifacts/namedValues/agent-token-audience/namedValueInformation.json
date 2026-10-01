@@ -1,7 +1,11 @@
 {
+  "id": "/subscriptions/8043efb5-d046-4aac-abcd-2c1a00e5ab86/resourceGroups/rg-foundrydeploydemo-dev/providers/Microsoft.ApiManagement/service/apim-foundrydeploydemo-dev-ch/namedValues/agent-token-audience",
+  "type": "Microsoft.ApiManagement/service/namedValues",
+  "name": "agent-token-audience",
   "properties": {
     "displayName": "agent-token-audience",
-    "secret": false,
-    "value": "22425f2b-4bf5-41c4-b6ce-11f2806ede72"
+    "value": "22425f2b-4bf5-41c4-b6ce-11f2806ede72",
+    "tags": null,
+    "secret": false
   }
 }
