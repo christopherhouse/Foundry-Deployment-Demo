@@ -1,17 +1,21 @@
 {
+  "id": "/subscriptions/8043efb5-d046-4aac-abcd-2c1a00e5ab86/resourceGroups/rg-foundrydeploydemo-dev/providers/Microsoft.ApiManagement/service/apim-foundrydeploydemo-dev-ch/backends/content-safety-backend",
+  "type": "Microsoft.ApiManagement/service/backends",
+  "name": "content-safety-backend",
   "properties": {
+    "title": "Azure AI Content Safety",
+    "description": "Azure AI Content Safety backend. URL is overridden per environment.",
+    "url": "https://cs-foundrydeploydemo-dev-ch.cognitiveservices.azure.com",
+    "protocol": "http",
     "credentials": {
       "managedIdentity": {
-        "resource": "https://cognitiveservices.azure.com"
+        "resource": "https://cognitiveservices.azure.com",
+        "clientId": null
       }
     },
-    "description": "Azure AI Content Safety backend. URL is overridden per environment.",
-    "protocol": "http",
-    "title": "Azure AI Content Safety",
     "tls": {
       "validateCertificateChain": true,
       "validateCertificateName": true
-    },
-    "url": "https://replace-me.cognitiveservices.azure.com"
+    }
   }
 }
