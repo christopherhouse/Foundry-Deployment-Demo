@@ -1,12 +1,35 @@
 {
+  "id": "/subscriptions/8043efb5-d046-4aac-abcd-2c1a00e5ab86/resourceGroups/rg-foundrydeploydemo-dev/providers/Microsoft.ApiManagement/service/apim-foundrydeploydemo-dev-ch/apis/foundry-openai-v1",
+  "type": "Microsoft.ApiManagement/service/apis",
+  "name": "foundry-openai-v1",
   "properties": {
-    "apiType": "http",
-    "description": "Azure OpenAI v1 proxy generated from the official Microsoft Foundry operation catalog.",
     "displayName": "Microsoft Foundry OpenAI v1",
+    "apiRevision": "1",
+    "description": "APIM-compatible operation catalog generated from the official Azure OpenAI v1 specification at commit a6943a926f76b3a2f90371b3466157eddf760e25. Request and response schemas are intentionally permissive because API Management does not support the source specification's OpenAPI 3.2.0 constructs.",
+    "subscriptionRequired": true,
+    "serviceUrl": null,
+    "backendId": null,
     "path": "openai/v1",
     "protocols": [
       "https"
     ],
-    "subscriptionRequired": true
+    "mcpProperties": null,
+    "a2aProperties": null,
+    "isAgent": false,
+    "agent": null,
+    "jsonRpcProperties": null,
+    "authenticationSettings": {
+      "oAuth2": null,
+      "openid": null,
+      "oAuth2AuthenticationSettings": [],
+      "openidAuthenticationSettings": []
+    },
+    "subscriptionKeyParameterNames": {
+      "header": "Ocp-Apim-Subscription-Key",
+      "query": "subscription-key",
+      "bearer": null
+    },
+    "isCurrent": true,
+    "effectivePath": null
   }
 }

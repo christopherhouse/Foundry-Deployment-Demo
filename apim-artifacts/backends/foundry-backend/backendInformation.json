@@ -1,9 +1,11 @@
 {
+  "id": "/subscriptions/8043efb5-d046-4aac-abcd-2c1a00e5ab86/resourceGroups/rg-foundrydeploydemo-dev/providers/Microsoft.ApiManagement/service/apim-foundrydeploydemo-dev-ch/backends/foundry-backend",
+  "type": "Microsoft.ApiManagement/service/backends",
+  "name": "foundry-backend",
   "properties": {
-    "description": "Microsoft Foundry OpenAI v1 backend. URL is overridden per environment.",
-    "protocol": "http",
     "title": "Microsoft Foundry",
-    "url": "https://replace-me.openai.azure.com/openai/v1"
+    "description": "Microsoft Foundry OpenAI v1 backend. URL is overridden per environment.",
+    "url": "https://foundrydeploydemo-dev-ch.openai.azure.com/openai/v1",
+    "protocol": "http"
   }
 }
-
