@@ -7,7 +7,22 @@
 5. Merge to publish to dev.
 6. Review the dry run and smoke result, then approve prod.
 
-Do not add `--delete-unmatched`. Use the manual extractor workflow only to establish or compare a controlled baseline; review extracted changes before merging.
+Do not add `--delete-unmatched`.
+
+## Extract portal changes into a pull request
+
+Use **Actions > Extract APIOps artifacts > Run workflow** when an APIOps-owned resource was changed in the APIM portal and needs to be reconciled into source control.
+
+1. Select the source environment. Use `dev` for the normal authoring flow; use `prod` only when intentionally reconciling a production-side change.
+2. The workflow checks out the default branch and runs the pinned APIOps CLI against `apiops/configuration.extractor.yaml`.
+3. `--remove-stale` synchronizes the managed extraction scope so additions, modifications, and deletions are represented.
+4. The extracted tree is validated with `Test-ApiOpsArtifacts.ps1` before it can become a pull request.
+5. The workflow opens `apim-extract-<environment>-<run-id>` against the default branch. If the extracted artifacts match the repository, no pull request is created.
+6. Review the generated delta. Move environment-specific values into `apiops/configuration.dev.yaml` and `apiops/configuration.prod.yaml` before merging.
+
+The extraction filter deliberately excludes Bicep-owned APIM loggers and diagnostics, APIM subscriptions, and other resources outside this repository's APIOps ownership boundary. The generated pull request is reviewed and merged through the same validation and release path as a hand-authored APIOps change.
+
+Repository Actions settings must allow GitHub Actions to create pull requests. `Deploy-Bootstrap.ps1` configures that setting while leaving the default `GITHUB_TOKEN` permission read-only; only workflows that explicitly request `contents: write` and `pull-requests: write` receive those permissions.
 
 ## Change content safety enforcement
 

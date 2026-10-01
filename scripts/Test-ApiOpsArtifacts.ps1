@@ -217,4 +217,29 @@ if (($allText -join "`n") -match '(?i)(client-secret|api-key\s*[:=]\s*[A-Za-z0-9
     throw 'Potential credential or unresolved redaction marker detected in APIOps artifacts.'
 }
 
+$extractWorkflowPath = Join-Path $repoRoot '.github\workflows\apiops-extract.yml'
+$extractWorkflow = Get-Content -LiteralPath $extractWorkflowPath -Raw
+
+foreach ($requiredText in @(
+    'contents: write',
+    'pull-requests: write',
+    '--output ./apim-artifacts',
+    '--filter ./apiops/configuration.extractor.yaml',
+    '--remove-stale',
+    'actions/upload-artifact@v4',
+    'actions/download-artifact@v4',
+    'rm -rf ./apim-artifacts',
+    'peter-evans/create-pull-request@v8',
+    'branch: apim-extract-${{ inputs.environment }}-${{ github.run_id }}',
+    'add-paths:'
+)) {
+    if ($extractWorkflow -notmatch [regex]::Escape($requiredText)) {
+        throw "The APIOps extraction workflow must include '$requiredText'."
+    }
+}
+
+if ($extractWorkflow -match '--delete-unmatched') {
+    throw 'The APIOps extraction workflow must not use --delete-unmatched.'
+}
+
 Write-Host 'APIOps artifact checks passed.'

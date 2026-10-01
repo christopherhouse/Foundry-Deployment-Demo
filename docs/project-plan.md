@@ -17,6 +17,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | P5.1 | Identity | Add OIDC bootstrap automation and guide | P3.2 | Done | Environments and federated identities can be configured |
 | P6.1 | CI/CD | Add infrastructure validation and deployment workflows | P3.3, P5.1 | Done | Dev deploy and approval-gated prod promotion exist |
 | P6.2 | CI/CD | Add APIOps validation and publishing workflows | P4.3, P5.1 | Done | Dry-run, dev publish, and prod promotion exist |
+| P6.3 | CI/CD | Reconcile APIM extraction through pull requests | P6.2 | Done | Managed APIM changes extract into the tracked artifact tree and open a reviewed delta PR, including deletions |
 | P7.1 | Quality | Add local validation and smoke-test scripts | P6.1, P6.2 | Done | Repository and deployed environment checks are repeatable |
 | P8.1 | Demo | Bootstrap Azure/GitHub foundation | P7.1 | Done | WU3 RGs, OIDC identities, scoped RBAC, environment variables, and prod approval are configured |
 | P8.2 | Demo | Configure workload-specific values | P8.1 | Done | West US 3 model version/SKU/capacity values and subscription quota are confirmed by the successful dev deployment |
@@ -61,6 +62,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | 2026-10-01 | Route Foundry account/project and APIM `allLogs` plus `AllMetrics` to Log Analytics | Category groups avoid an incomplete static list, resource-specific tables improve queryability, and both environments use their existing dedicated workspace |
 | 2026-10-01 | Use local gateway profiles for the demo agents | A validated active `.env` keeps secrets uncommitted while allowing one-command switching between Foundry APIM with Entra and an externally managed AI Gateway with per-agent API keys |
 | 2026-10-01 | Use dedicated Content Safety accounts with balanced request and response filtering | Environment isolation, managed identity, prompt-shield detection, and explicit severity-4 thresholds add safety governance without introducing keys |
+| 2026-10-01 | Reconcile APIM portal changes through generated pull requests | Extracting the managed scope into the tracked artifact tree makes the Git delta reviewable while keeping Bicep-owned children and subscription secrets out of APIOps |
 
 ## Risks
 
