@@ -32,6 +32,7 @@ This repository is a two-environment Microsoft Foundry and Azure API Management 
 - Foundry model deployments must remain data-driven through the `modelDeployments` parameter array.
 - Foundry data plane access for humans and automation must remain data-driven through the `foundryDataPlaneAdmins` parameter array; never hand-add a portal role assignment.
 - Bicep owns resource groups, Foundry resources/projects/deployments, APIM service instances, managed identities, RBAC, Log Analytics, Application Insights, Foundry/APIM Azure Monitor diagnostic settings, and the APIM Application Insights logger and diagnostic.
+- The external AI Gateway preview resource used by the demo is configuration-only in this repository; do not add infrastructure management for it unless the project scope explicitly changes.
 - Foundry account, Foundry project, and APIM diagnostic settings must route `allLogs` and `AllMetrics` to the environment Log Analytics workspace with resource-specific tables.
 - APIOps owns APIM APIs, specifications, backends, named values, products, associations, and policies.
 - The APIM logger and diagnostic are the only APIM children Bicep owns, because the logger needs the Application Insights connection string. Keep `loggers` and `diagnostics` empty in `apiops/configuration.extractor.yaml`.

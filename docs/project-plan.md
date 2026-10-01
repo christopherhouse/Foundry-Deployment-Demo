@@ -30,6 +30,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | P10.2 | Agents | Add two unattended .NET 10 model consumers | P10.1 | Done | Bronze ticket triage and gold market brief agents call `gpt-5-6-luna` with no tools or external services |
 | P10.3 | Agents | Add bounded `Retry-After` handling and token reporting | P10.2 | Done | Both agents honor APIM retry guidance and report SDK usage plus APIM tier headers independently |
 | P10.4 | Agents | Add initialization and demo runbook | P10.3 | Done | One script creates local subscriptions/configuration and the runbook covers execution and KQL |
+| P10.5 | Agents | Add switchable Foundry APIM and AI Gateway profiles | P10.4 | Done | One command switches the agents between Entra-plus-subscription-key APIM auth and separate AI Gateway API keys |
 
 ## Decision log
 
@@ -57,6 +58,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | 2026-10-01 | Use .NET 10 and the official OpenAI client for both demo agents | One shared client and retry implementation keeps the same model/API comparison focused on bronze versus gold traffic shape |
 | 2026-10-01 | Honor `Retry-After` with bounded waits | The bronze demo makes throttling visible while attempt, delay, and total-wait caps keep unattended runs finite |
 | 2026-10-01 | Route Foundry account/project and APIM `allLogs` plus `AllMetrics` to Log Analytics | Category groups avoid an incomplete static list, resource-specific tables improve queryability, and both environments use their existing dedicated workspace |
+| 2026-10-01 | Use local gateway profiles for the demo agents | A validated active `.env` keeps secrets uncommitted while allowing one-command switching between Foundry APIM with Entra and an externally managed AI Gateway with per-agent API keys |
 
 ## Risks
 

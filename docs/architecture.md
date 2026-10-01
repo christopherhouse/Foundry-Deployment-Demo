@@ -95,16 +95,23 @@ The APIM contract is generated from Microsoft's official Azure OpenAI v1 specifi
 
 ## Demo agents and caller identity
 
-The two .NET 10 demo agents use the same `gpt-5-6-luna` deployment and no tools or external services. The Ticket Triage Agent uses `foundry-bronze` for many small calls; the Market Brief Analyst uses `foundry-gold` for three larger chained calls.
+The two .NET 10 demo agents use no tools or external services. Under the Foundry APIM profile, both use the `gpt-5-6-luna` deployment: the Ticket Triage Agent uses `foundry-bronze` for many small calls, while the Market Brief Analyst uses `foundry-gold` for three larger chained requests. The AI Gateway profile selects its model independently.
 
-Caller authentication and tier selection are deliberately separate:
+The agents use local, gitignored profiles so the demo can switch between two OpenAI-compatible gateway paths without changing code:
+
+- `foundry-apim` targets the repository-managed APIM and Foundry resources.
+- `ai-gateway` targets an externally managed AI Gateway preview resource. This repository does not deploy or configure that infrastructure.
+
+For the Foundry APIM profile, caller authentication and tier selection are deliberately separate:
 
 - `DefaultAzureCredential` obtains a delegated token for the `foundry-apim-demo-agents` resource application. Locally it uses the Azure CLI credential.
 - The API policy validates tenant `cd48c7b8-9369-443d-8a4c-bd1e53504a09`, audience `22425f2b-4bf5-41c4-b6ce-11f2806ede72`, and caller application `04b07795-8ddb-461a-bbee-02f9e1bf7b46` (Azure CLI).
 - Each agent also sends its own product-scoped APIM subscription key. That key selects bronze or gold limits and supplies the Subscription ID dimension for token metrics.
 - A shared bounded retry policy honors `Retry-After` for `429` and `503`; daily-quota `403` responses are terminal.
 
-The app registration has a delegated `user_impersonation` scope and pre-authorizes Azure CLI. It has no secret, certificate, or federated credential. APIM subscription keys remain local in `agents/.env` and are never APIOps artifacts.
+The app registration has a delegated `user_impersonation` scope and pre-authorizes Azure CLI. It has no secret, certificate, or federated credential. APIM subscription keys remain in the local `foundry-apim` profile and are never APIOps artifacts.
+
+The AI Gateway profile uses the `api-key` request header and separate local keys for the Ticket Triage and Market Brief agents. It does not initialize `DefaultAzureCredential` or send an Entra bearer token. Both profiles carry their own base URL and model name, and `scripts/Switch-AgentDemoProfile.ps1` validates and activates one profile as `agents/.env`.
 
 ## Promotion
 

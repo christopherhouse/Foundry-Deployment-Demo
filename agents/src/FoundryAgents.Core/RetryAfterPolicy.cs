@@ -5,7 +5,7 @@ namespace FoundryAgents.Core;
 
 public sealed class RetryAfterPolicy : ClientRetryPolicy
 {
-    private readonly string tier;
+    private readonly string context;
     private readonly int maxAttempts;
     private readonly TimeSpan maxDelay;
     private readonly TimeSpan totalBudget;
@@ -14,7 +14,7 @@ public sealed class RetryAfterPolicy : ClientRetryPolicy
     public RetryAfterPolicy(AgentOptions options, RetryStatistics statistics)
         : base(Math.Max(0, options.RetryMaxAttempts - 1))
     {
-        tier = options.Tier;
+        context = $"{options.Profile}/{options.AgentLabel}";
         maxAttempts = options.RetryMaxAttempts;
         maxDelay = options.RetryMaxDelay;
         totalBudget = options.RetryTotalBudget;
@@ -31,8 +31,8 @@ public sealed class RetryAfterPolicy : ClientRetryPolicy
         int status = message.Response?.Status ?? 0;
         if (status == 403)
         {
-            statistics.RecordQuotaExceeded();
-            Console.Error.WriteLine($"[{tier}] Daily token quota exhausted (HTTP 403); this response is not retried.");
+            statistics.RecordForbidden();
+            Console.Error.WriteLine($"[{context}] Quota or authorization failure (HTTP 403); this response is not retried.");
             return false;
         }
 
@@ -60,13 +60,13 @@ public sealed class RetryAfterPolicy : ClientRetryPolicy
 
         if (!statistics.CanWait(delay, totalBudget))
         {
-            Console.Error.WriteLine($"[{tier}] Retry wait budget of {totalBudget.TotalSeconds:0}s is exhausted; no additional delay will be applied.");
+            Console.Error.WriteLine($"[{context}] Retry wait budget of {totalBudget.TotalSeconds:0}s is exhausted; no additional delay will be applied.");
             return TimeSpan.Zero;
         }
 
         statistics.RecordRetry(status, delay);
         string delaySource = usedRetryAfter ? "per Retry-After" : "with exponential backoff";
-        Console.WriteLine($"[{tier}] HTTP {status}; waiting {delay.TotalSeconds:0.0}s {delaySource} before attempt {Math.Min(tryCount + 1, maxAttempts)}/{maxAttempts}.");
+        Console.WriteLine($"[{context}] HTTP {status}; waiting {delay.TotalSeconds:0.0}s {delaySource} before attempt {Math.Min(tryCount + 1, maxAttempts)}/{maxAttempts}.");
         return delay;
     }
 

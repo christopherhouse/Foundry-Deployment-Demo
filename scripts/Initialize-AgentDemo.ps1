@@ -4,7 +4,7 @@ Initializes local configuration for the two .NET demo agents.
 
 .DESCRIPTION
 Creates/updates the secretless Entra resource app, creates product-scoped bronze and gold APIM subscriptions,
-and writes the resulting local settings to the gitignored agents/.env file.
+writes the resulting local Foundry APIM profile, and activates it as agents/.env.
 #>
 [CmdletBinding()]
 param(
@@ -21,7 +21,9 @@ if ($LASTEXITCODE -ne 0) {
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $appScript = Join-Path $PSScriptRoot 'New-AgentAppRegistration.ps1'
 $subscriptionScript = Join-Path $PSScriptRoot 'New-TierSubscription.ps1'
-$envPath = Join-Path $repoRoot 'agents\.env'
+$switchScript = Join-Path $PSScriptRoot 'Switch-AgentDemoProfile.ps1'
+$profilesRoot = Join-Path $repoRoot 'agents\profiles'
+$profilePath = Join-Path $profilesRoot 'foundry-apim.env.local'
 
 $appResults = @(& $appScript)
 $app = $appResults | Where-Object { $null -ne $_.ApplicationId } | Select-Object -Last 1
@@ -57,16 +59,24 @@ if ([string]::IsNullOrWhiteSpace($goldKey)) {
 }
 
 $settings = @(
-    "FOUNDRY_APIM_BASE_URL=$($gatewayUrl.TrimEnd('/'))/openai/v1"
-    "FOUNDRY_AGENT_SCOPE=$($app.Scope)"
-    'FOUNDRY_MODEL=gpt-5-6-luna'
-    "FOUNDRY_BRONZE_SUBSCRIPTION_KEY=$bronzeKey"
-    "FOUNDRY_GOLD_SUBSCRIPTION_KEY=$goldKey"
-    'FOUNDRY_RETRY_MAX_ATTEMPTS=5'
-    'FOUNDRY_RETRY_MAX_DELAY_SECONDS=90'
-    'FOUNDRY_RETRY_TOTAL_BUDGET_SECONDS=180'
+    'AGENT_PROFILE=foundry-apim'
+    "AGENT_BASE_URL=$($gatewayUrl.TrimEnd('/'))/openai/v1"
+    'AGENT_MODEL=gpt-5-6-luna'
+    'AGENT_AUTH_MODE=entra-plus-key'
+    'AGENT_KEY_HEADER=Ocp-Apim-Subscription-Key'
+    "AGENT_TOKEN_SCOPE=$($app.Scope)"
+    'AGENT_TRIAGE_LABEL=bronze'
+    'AGENT_MARKET_LABEL=gold'
+    'AGENT_REASONING_EFFORT=low'
+    "AGENT_TRIAGE_GATEWAY_KEY=$bronzeKey"
+    "AGENT_MARKET_GATEWAY_KEY=$goldKey"
+    'AGENT_RETRY_MAX_ATTEMPTS=5'
+    'AGENT_RETRY_MAX_DELAY_SECONDS=90'
+    'AGENT_RETRY_TOTAL_BUDGET_SECONDS=180'
 )
 
-Set-Content -LiteralPath $envPath -Value $settings -Encoding ascii
-Write-Host "Agent configuration written to '$envPath'."
+New-Item -ItemType Directory -Path $profilesRoot -Force | Out-Null
+Set-Content -LiteralPath $profilePath -Value $settings -Encoding ascii
+Write-Host "Foundry APIM agent profile written to '$profilePath'."
 Write-Host 'The file contains APIM subscription keys and must remain uncommitted.'
+& $switchScript -Profile 'foundry-apim'

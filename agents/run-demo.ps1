@@ -1,5 +1,8 @@
 [CmdletBinding()]
-param()
+param(
+    [ValidateSet('foundry-apim', 'ai-gateway')]
+    [string]$Profile
+)
 
 $ErrorActionPreference = 'Stop'
 $agentsRoot = $PSScriptRoot
@@ -7,8 +10,14 @@ $triageProject = Join-Path $agentsRoot 'src\TriageAgent\TriageAgent.csproj'
 $briefProject = Join-Path $agentsRoot 'src\BriefAgent\BriefAgent.csproj'
 $envFile = Join-Path $agentsRoot '.env'
 
+if ($PSBoundParameters.ContainsKey('Profile')) {
+    $repoRoot = Split-Path -Parent $agentsRoot
+    $switchScript = Join-Path $repoRoot 'scripts\Switch-AgentDemoProfile.ps1'
+    & $switchScript -Profile $Profile
+}
+
 if (-not (Test-Path -LiteralPath $envFile)) {
-    throw "Agent configuration '$envFile' was not found. Run .\scripts\Initialize-AgentDemo.ps1 first."
+    throw "Agent configuration '$envFile' was not found. Initialize and activate an agent profile first."
 }
 
 function Start-AgentProcess {
