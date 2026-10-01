@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/BriefAgent/BriefAgent.csproj" />
+    <Project Path="src/FoundryAgents.Core/FoundryAgents.Core.csproj" />
+    <Project Path="src/TriageAgent/TriageAgent.csproj" />
+  </Folder>
+</Solution>

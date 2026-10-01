@@ -1,0 +1,12 @@
+[
+  { "category": "Demand", "signal": "Synthetic enterprise trial starts increased 18% month over month." },
+  { "category": "Usage", "signal": "Median weekly active usage rose from 3.1 to 4.4 sessions per account." },
+  { "category": "Conversion", "signal": "Trial-to-paid conversion declined from 24% to 21% in the sample cohort." },
+  { "category": "Support", "signal": "Synthetic priority-one ticket volume fell 12%, while billing questions rose 9%." },
+  { "category": "Product", "signal": "The fictional workflow automation feature reached 41% adoption among active accounts." },
+  { "category": "Retention", "signal": "Sample 90-day retention improved by 3 percentage points for accounts using automation." },
+  { "category": "Region", "signal": "The fabricated West region grew fastest at 27%, with Central flat at 2%." },
+  { "category": "Risk", "signal": "Five synthetic strategic accounts have declining usage for three consecutive weeks." },
+  { "category": "Pipeline", "signal": "The fictional qualified pipeline is 1.3x the quarterly target, concentrated in two large deals." },
+  { "category": "Economics", "signal": "Synthetic inference cost per completed workflow decreased 11% after prompt optimization." }
+]

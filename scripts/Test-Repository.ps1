@@ -33,6 +33,27 @@ try {
 
     & (Join-Path $PSScriptRoot 'Test-ApiOpsArtifacts.ps1')
 
+    $dotnet = Get-Command dotnet -ErrorAction SilentlyContinue
+    if ($null -eq $dotnet) {
+        Write-Warning '.NET SDK was not found; skipping the demo agent build.'
+    }
+    else {
+        $dotnet10 = dotnet --list-sdks | Where-Object { $_ -match '^10\.' }
+        if ($LASTEXITCODE -ne 0) {
+            throw 'Unable to inspect installed .NET SDKs.'
+        }
+
+        if (-not $dotnet10) {
+            Write-Warning '.NET 10 SDK was not found; skipping the demo agent build.'
+        }
+        else {
+            dotnet build .\agents\FoundryAgents.slnx --configuration Release
+            if ($LASTEXITCODE -ne 0) {
+                throw 'Demo agent build failed.'
+            }
+        }
+    }
+
     if (-not (Test-Path -LiteralPath '.\node_modules')) {
         npm ci --ignore-scripts
         if ($LASTEXITCODE -ne 0) {

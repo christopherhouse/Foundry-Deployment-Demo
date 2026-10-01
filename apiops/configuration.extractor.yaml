@@ -6,6 +6,9 @@ backends:
 namedValues:
   - foundry-api-audience
   - foundry-rate-limit-calls
+  - entra-tenant-id
+  - agent-client-application-id
+  - agent-token-audience
   - tier-bronze-tokens-per-minute
   - tier-bronze-token-quota
   - tier-silver-tokens-per-minute
