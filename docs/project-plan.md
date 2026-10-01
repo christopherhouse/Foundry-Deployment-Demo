@@ -22,7 +22,7 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | P8.2 | Demo | Configure workload-specific values | P8.1 | Done | West US 3 model version/SKU/capacity values and subscription quota are confirmed by the successful dev deployment |
 | P8.3 | Demo | Deploy dev infrastructure and APIOps baseline | P8.2 | Done | Dev infrastructure and the 106-operation v1 APIOps contract are published; `/models`, `/responses`, and `/embeddings` smoke tests pass |
 | P8.4 | Demo | Approve and deploy prod | P8.3 | In progress | Prod smoke tests pass |
-| P8.5 | Demo | Demonstrate model and APIM change CD | P8.4 | Not started | Both change paths and rollback are demonstrated |
+| P8.5 | Demo | Demonstrate model and APIM change CD | P8.4 | In progress | Both change paths and rollback are demonstrated |
 | P9.1 | Governance | Add Log Analytics and Application Insights with service diagnostics | P8.3 | Done | Each environment has a dedicated workspace and component; Foundry accounts/projects and APIM send all resource logs and metrics to the workspace; the APIM Application Insights diagnostic has `metrics: true` |
 | P9.2 | Governance | Add bronze/silver/gold products with tiered token limits | P9.1 | Done | Each product publishes the Foundry API and enforces its own `llm-token-limit` rate limit and daily quota |
 | P9.3 | Governance | Emit token metrics from the Foundry API policy | P9.1 | Done | `llm-emit-token-metric` reports token consumption with API, operation, product, and subscription dimensions |
