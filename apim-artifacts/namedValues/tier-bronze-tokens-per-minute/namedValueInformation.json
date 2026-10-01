@@ -1,7 +1,11 @@
 {
+  "id": "/subscriptions/8043efb5-d046-4aac-abcd-2c1a00e5ab86/resourceGroups/rg-foundrydeploydemo-dev/providers/Microsoft.ApiManagement/service/apim-foundrydeploydemo-dev-ch/namedValues/tier-bronze-tokens-per-minute",
+  "type": "Microsoft.ApiManagement/service/namedValues",
+  "name": "tier-bronze-tokens-per-minute",
   "properties": {
     "displayName": "tier-bronze-tokens-per-minute",
-    "secret": false,
-    "value": "1000"
+    "value": "1000",
+    "tags": null,
+    "secret": false
   }
 }
