@@ -12,6 +12,9 @@ $requiredFiles = @(
     'backends\foundry-backend\backendInformation.json',
     'namedValues\foundry-api-audience\namedValueInformation.json',
     'namedValues\foundry-rate-limit-calls\namedValueInformation.json',
+    'namedValues\entra-tenant-id\namedValueInformation.json',
+    'namedValues\agent-client-application-id\namedValueInformation.json',
+    'namedValues\agent-token-audience\namedValueInformation.json',
     'namedValues\tier-bronze-tokens-per-minute\namedValueInformation.json',
     'namedValues\tier-bronze-token-quota\namedValueInformation.json',
     'namedValues\tier-silver-tokens-per-minute\namedValueInformation.json',
@@ -98,6 +101,24 @@ if ($apiPolicy -notmatch '<llm-emit-token-metric') {
     throw 'The Foundry API policy must emit token metrics via llm-emit-token-metric.'
 }
 
+if ($apiPolicy -notmatch '<validate-azure-ad-token') {
+    throw 'The Foundry API policy must validate Microsoft Entra access tokens.'
+}
+
+foreach ($token in @('{{entra-tenant-id}}', '{{agent-client-application-id}}', '{{agent-token-audience}}')) {
+    if ($apiPolicy -notmatch [regex]::Escape($token)) {
+        throw "The Foundry API policy must reference named value '$token'."
+    }
+}
+
+if ($apiPolicy.IndexOf('<validate-azure-ad-token') -gt $apiPolicy.IndexOf('<base />')) {
+    throw 'Microsoft Entra token validation must run before inherited product policies.'
+}
+
+if ($apiPolicy.IndexOf('<validate-azure-ad-token') -gt $apiPolicy.IndexOf('<llm-emit-token-metric')) {
+    throw 'Microsoft Entra token validation must run before token metrics are emitted.'
+}
+
 $tiers = @('bronze', 'silver', 'gold')
 foreach ($tier in $tiers) {
     $policy = Get-Content -LiteralPath (Join-Path $artifactRoot "products\foundry-$tier\policy.xml") -Raw
@@ -120,6 +141,17 @@ foreach ($tier in $tiers) {
 # Tier limits must increase from bronze to gold in the base artifacts and in every override file.
 $repoOverrides = Get-ChildItem -Path (Join-Path $repoRoot 'apiops') -Filter 'configuration.*.yaml' |
     Where-Object { $_.Name -ne 'configuration.extractor.yaml' }
+
+$entraNamedValues = @('entra-tenant-id', 'agent-client-application-id', 'agent-token-audience')
+foreach ($override in $repoOverrides) {
+    $text = Get-Content -LiteralPath $override.FullName -Raw
+    foreach ($name in $entraNamedValues) {
+        $pattern = 'name:\s*' + [regex]::Escape($name) + '\s*\r?\n\s*properties:\s*\r?\n\s*value:\s*"[^"]+"'
+        if ($text -notmatch $pattern) {
+            throw "Override '$($override.Name)' is missing a value for '$name'."
+        }
+    }
+}
 
 foreach ($setting in @('tokens-per-minute', 'token-quota')) {
     $baseValues = $tiers | ForEach-Object {

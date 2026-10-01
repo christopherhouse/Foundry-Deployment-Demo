@@ -1,0 +1,7 @@
+{
+  "properties": {
+    "displayName": "entra-tenant-id",
+    "secret": false,
+    "value": "cd48c7b8-9369-443d-8a4c-bd1e53504a09"
+  }
+}

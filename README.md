@@ -34,10 +34,20 @@ APIM (managed identity) --> Microsoft Foundry model deployments
 
 Bicep owns resource groups, Foundry, model deployments, APIM service instances, identities, RBAC, Log Analytics, Application Insights, and the APIM Application Insights logger and diagnostic. APIOps owns APIM APIs, backends, named values, products, associations, and policies.
 
+## Demo agents
+
+Two unattended .NET 10 console agents under `agents/` consume `gpt-5-6-luna` through APIM:
+
+- **Ticket Triage Agent** uses a bronze product subscription and many small requests to demonstrate token-per-minute throttling plus bounded `Retry-After` recovery.
+- **Market Brief Analyst** uses a gold product subscription and three large chained requests to demonstrate a different token-consumption profile.
+
+APIM requires both a Microsoft Entra access token and a product-scoped subscription key. The token authenticates the signed-in caller; the subscription selects the tier and keeps token metrics independently attributable. See [Run the .NET agent demo](docs/runbooks/run-agent-demo.md).
+
 ## Prerequisites
 
 - Azure CLI with Bicep CLI
 - PowerShell 5.1 or later
+- .NET 10 SDK (pinned by `global.json`)
 - Node.js 22 or later
 - GitHub CLI for optional environment/bootstrap automation
 - Permissions to create resource groups, Foundry resources, APIM, role assignments, app registrations, and federated credentials
@@ -60,6 +70,7 @@ Push the branch and merge it through a pull request. After the merge, update loc
 4. Run `.\scripts\Deploy-Bootstrap.ps1` to create resource groups, OIDC identities, scoped RBAC, and GitHub environment variables.
 5. Merge the scaffold or run `.github/workflows/release.yml` to deploy infrastructure and publish APIM configuration in order.
 6. Use the dedicated infrastructure and APIOps workflows only for targeted manual recovery or demonstration steps.
+7. Run `.\scripts\Initialize-AgentDemo.ps1`, build `agents\FoundryAgents.slnx`, and launch `.\agents\run-demo.ps1`.
 
 ## Add a model deployment
 
@@ -93,4 +104,5 @@ Create a pull request with the parameter change. The infrastructure workflows va
 - [Bootstrap runbook](docs/runbooks/bootstrap.md)
 - [Deploy a model](docs/runbooks/deploy-model.md)
 - [Change APIM configuration](docs/runbooks/change-apim-configuration.md)
+- [Run the .NET agent demo](docs/runbooks/run-agent-demo.md)
 - [Rollback](docs/runbooks/rollback.md)

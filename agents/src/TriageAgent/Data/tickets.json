@@ -1,0 +1,22 @@
+[
+  { "id": "T-001", "subject": "Cannot reset password", "description": "The reset link expires immediately for one test user." },
+  { "id": "T-002", "subject": "Invoice total mismatch", "description": "A synthetic invoice shows 125.00 while the line items total 115.00." },
+  { "id": "T-003", "subject": "Mobile app closes", "description": "The demo mobile app closes after tapping the profile photo on Android." },
+  { "id": "T-004", "subject": "Feature request: dark mode", "description": "A trial user asks whether dark mode can be added." },
+  { "id": "T-005", "subject": "Export is slow", "description": "A 10,000-row synthetic report takes four minutes to export." },
+  { "id": "T-006", "subject": "Duplicate notification", "description": "The same sample alert email arrived twice." },
+  { "id": "T-007", "subject": "Admin page unavailable", "description": "All demo administrators receive a 503 when opening settings." },
+  { "id": "T-008", "subject": "Typo in onboarding", "description": "The welcome screen says 'acount' instead of 'account'." },
+  { "id": "T-009", "subject": "Search misses exact match", "description": "Searching for the synthetic order ID ORD-4001 returns no results." },
+  { "id": "T-010", "subject": "Unexpected sign-out", "description": "The test session ends after five minutes instead of sixty." },
+  { "id": "T-011", "subject": "CSV columns shifted", "description": "Commas in a sample company name shift fields in the CSV export." },
+  { "id": "T-012", "subject": "Dashboard stale", "description": "A sample KPI remains unchanged after refreshing the page." },
+  { "id": "T-013", "subject": "Keyboard navigation", "description": "Tab focus skips the Save button in the demo profile form." },
+  { "id": "T-014", "subject": "API returns 401", "description": "A test integration started receiving 401 responses this morning." },
+  { "id": "T-015", "subject": "Attachment upload fails", "description": "A synthetic 12 MB PDF upload stops at 99 percent." },
+  { "id": "T-016", "subject": "Timezone display", "description": "A sample meeting at 14:00 UTC displays as 08:00 instead of 09:00 Central." },
+  { "id": "T-017", "subject": "Missing audit event", "description": "A test role change does not appear in the audit timeline." },
+  { "id": "T-018", "subject": "Browser compatibility", "description": "The demo table header overlaps content in Safari." },
+  { "id": "T-019", "subject": "Bulk action partial failure", "description": "Three of fifty synthetic records remain unchanged after a bulk update." },
+  { "id": "T-020", "subject": "Service health question", "description": "A trial user asks whether planned maintenance affects the demo tenant." }
+]

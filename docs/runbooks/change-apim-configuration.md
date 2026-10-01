@@ -28,6 +28,12 @@ Tier limits are named values, so a tier change never touches Bicep.
 To confirm enforcement after publish, create a subscription scoped to the product and read the response headers:
 
 ```powershell
+$app = .\scripts\New-AgentAppRegistration.ps1
+$token = az account get-access-token `
+  --scope $app.Scope `
+  --query accessToken `
+  --output tsv
+
 $key = .\scripts\New-TierSubscription.ps1 `
   -ResourceGroupName rg-foundrydeploydemo-dev `
   -ApimServiceName apim-foundrydeploydemo-dev-ch `
@@ -36,7 +42,7 @@ $key = .\scripts\New-TierSubscription.ps1 `
 $response = Invoke-WebRequest `
   -Uri 'https://<apim>.azure-api.net/openai/v1/chat/completions' `
   -Method Post `
-  -Headers @{ 'Ocp-Apim-Subscription-Key' = $key; 'Content-Type' = 'application/json' } `
+  -Headers @{ Authorization = "Bearer $token"; 'Ocp-Apim-Subscription-Key' = $key; 'Content-Type' = 'application/json' } `
   -Body '{"model":"gpt-5-6-sol","messages":[{"role":"user","content":"Say OK"}],"max_completion_tokens":16}' `
   -UseBasicParsing
 

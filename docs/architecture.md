@@ -60,15 +60,29 @@ One manual step remains: in the Application Insights component, set **Usage and 
 ## Request path
 
 1. A client sends an Azure OpenAI v1 request to `https://<apim>.azure-api.net/openai/v1/<operation>`. Use `/responses` for new text-generation integrations; `/chat/completions`, `/completions`, `/embeddings`, and the rest of the official v1 operation catalog are also represented.
-2. APIM enforces a subscription and rate limit.
-3. The product policy enforces the tier's token rate limit and daily token quota.
-4. The API policy emits token metrics to Application Insights.
-5. APIM selects the environment-specific Foundry backend.
-6. APIM obtains a Microsoft Entra token through its managed identity.
-7. Foundry authorizes the APIM identity through `Cognitive Services OpenAI User`.
-8. For inference operations, the request body `model` value selects the Foundry deployment.
+2. APIM validates the caller's Microsoft Entra token against the tenant, Azure CLI client application ID, and dedicated agent API audience.
+3. APIM requires a product-scoped subscription and applies the request rate limit.
+4. The product policy enforces the tier's token rate limit and daily token quota.
+5. The API policy emits token metrics to Application Insights.
+6. APIM selects the environment-specific Foundry backend.
+7. APIM obtains a separate Microsoft Entra token through its managed identity.
+8. Foundry authorizes the APIM identity through `Cognitive Services OpenAI User`.
+9. For inference operations, the request body `model` value selects the Foundry deployment.
 
-The APIM contract is generated from Microsoft's official Azure OpenAI v1 specification. The upstream OpenAPI 3.2 document is converted to OpenAPI 3.0.3 with permissive payload schemas because APIM doesn't support OpenAPI 3.2. APIM uses the v1 Microsoft Entra audience `https://ai.azure.com`.
+The APIM contract is generated from Microsoft's official Azure OpenAI v1 specification. The upstream OpenAPI 3.2 document is converted to OpenAPI 3.0.3 with permissive payload schemas because APIM doesn't support OpenAPI 3.2. APIM uses the v1 Microsoft Entra audience `https://ai.azure.com` when it authenticates to Foundry.
+
+## Demo agents and caller identity
+
+The two .NET 10 demo agents use the same `gpt-5-6-luna` deployment and no tools or external services. The Ticket Triage Agent uses `foundry-bronze` for many small calls; the Market Brief Analyst uses `foundry-gold` for three larger chained calls.
+
+Caller authentication and tier selection are deliberately separate:
+
+- `DefaultAzureCredential` obtains a delegated token for the `foundry-apim-demo-agents` resource application. Locally it uses the Azure CLI credential.
+- The API policy validates tenant `cd48c7b8-9369-443d-8a4c-bd1e53504a09`, audience `22425f2b-4bf5-41c4-b6ce-11f2806ede72`, and caller application `04b07795-8ddb-461a-bbee-02f9e1bf7b46` (Azure CLI).
+- Each agent also sends its own product-scoped APIM subscription key. That key selects bronze or gold limits and supplies the Subscription ID dimension for token metrics.
+- A shared bounded retry policy honors `Retry-After` for `429` and `503`; daily-quota `403` responses are terminal.
+
+The app registration has a delegated `user_impersonation` scope and pre-authorizes Azure CLI. It has no secret, certificate, or federated credential. APIM subscription keys remain local in `agents/.env` and are never APIOps artifacts.
 
 ## Promotion
 

@@ -9,6 +9,17 @@ namedValues:
     properties:
       value: "30"
 
+  # Microsoft Entra validation for the demo agents.
+  - name: entra-tenant-id
+    properties:
+      value: "cd48c7b8-9369-443d-8a4c-bd1e53504a09"
+  - name: agent-client-application-id
+    properties:
+      value: "04b07795-8ddb-461a-bbee-02f9e1bf7b46"
+  - name: agent-token-audience
+    properties:
+      value: "22425f2b-4bf5-41c4-b6ce-11f2806ede72"
+
   # Product tier token limits. Bronze < Silver < Gold.
   - name: tier-bronze-tokens-per-minute
     properties:

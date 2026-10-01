@@ -26,6 +26,10 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | P9.1 | Governance | Add Log Analytics and Application Insights with APIM diagnostics | P8.3 | Done | Each environment has a dedicated workspace and component, and the APIM diagnostic has `metrics: true` |
 | P9.2 | Governance | Add bronze/silver/gold products with tiered token limits | P9.1 | Done | Each product publishes the Foundry API and enforces its own `llm-token-limit` rate limit and daily quota |
 | P9.3 | Governance | Emit token metrics from the Foundry API policy | P9.1 | Done | `llm-emit-token-metric` reports token consumption with API, operation, product, and subscription dimensions |
+| P10.1 | Agents | Add Microsoft Entra caller validation at APIM | P9.3 | Done | APIM validates tenant, audience, and Azure CLI client application before metering requests |
+| P10.2 | Agents | Add two unattended .NET 10 model consumers | P10.1 | Done | Bronze ticket triage and gold market brief agents call `gpt-5-6-luna` with no tools or external services |
+| P10.3 | Agents | Add bounded `Retry-After` handling and token reporting | P10.2 | Done | Both agents honor APIM retry guidance and report SDK usage plus APIM tier headers independently |
+| P10.4 | Agents | Add initialization and demo runbook | P10.3 | Done | One script creates local subscriptions/configuration and the runbook covers execution and KQL |
 
 ## Decision log
 
@@ -48,6 +52,10 @@ Update `Status` as work progresses. Valid values are `Not started`, `In progress
 | 2026-09-22 | Enforce token budgets with product-scope `llm-token-limit` and tier named values | Tier changes stay an APIOps-only change, and a per-tier `counter-key` prefix keeps the three counters independent |
 | 2026-09-22 | Emit token metrics once at API scope instead of per product | A single `llm-emit-token-metric` with a `Product ID` dimension attributes consumption per tier without duplicating policy |
 | 2026-09-22 | Re-authenticate to Azure after the infrastructure deployment step | Creating APIM can exceed the lifetime of the OIDC-derived Azure CLI token that the APIOps CLI reuses through `DefaultAzureCredential` |
+| 2026-10-01 | Require dual credentials for agent calls | Microsoft Entra authenticates the caller while a product-scoped APIM subscription independently selects the token tier and metric attribution |
+| 2026-10-01 | Use a secretless resource app pre-authorized for Azure CLI | Local `DefaultAzureCredential` can obtain delegated tokens without introducing application secrets or changing the RG-scoped deployment identities |
+| 2026-10-01 | Use .NET 10 and the official OpenAI client for both demo agents | One shared client and retry implementation keeps the same model/API comparison focused on bronze versus gold traffic shape |
+| 2026-10-01 | Honor `Retry-After` with bounded waits | The bronze demo makes throttling visible while attempt, delay, and total-wait caps keep unattended runs finite |
 
 ## Risks
 

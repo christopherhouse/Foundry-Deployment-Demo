@@ -27,6 +27,11 @@ deployment-outputs*.json
 *.secret.*
 secrets/
 
+# .NET
+bin/
+obj/
+*.user
+
 # Test and temporary output
 artifacts/
 coverage/
