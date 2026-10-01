@@ -52,6 +52,7 @@ The script:
 - Creates or updates the GitHub `dev` and `prod` environments.
 - Sets all nonsecret environment variables used by the workflows.
 - Configures `christopherhouse` as the required production reviewer.
+- Keeps the default `GITHUB_TOKEN` permission read-only while allowing explicitly authorized workflows to create APIOps extraction pull requests.
 - Initializes repository variable `ENABLE_AUTOMATIC_RELEASE=false` so merging bootstrap changes cannot deploy the workload prematurely.
 
 Use `-WhatIf` to preview script-side changes or `-SkipGitHubConfiguration` to deploy only Azure resources.

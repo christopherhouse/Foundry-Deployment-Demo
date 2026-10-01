@@ -215,6 +215,17 @@ if ($deploymentOutputs.prodResourceGroupName.value -ne $prodResourceGroupName) {
 }
 
 if (-not $SkipGitHubConfiguration) {
+    Invoke-CheckedCommand `
+        -Command {
+            gh api `
+                --method PUT `
+                "repos/$repository/actions/permissions/workflow" `
+                -f default_workflow_permissions='read' `
+                -F can_approve_pull_request_reviews=true
+        } `
+        -FailureMessage 'Unable to allow GitHub Actions to create APIOps extraction pull requests.' |
+        Out-Null
+
     gh variable get ENABLE_AUTOMATIC_RELEASE --repo $repository *> $null
     if ($LASTEXITCODE -ne 0) {
         Invoke-CheckedCommand `
@@ -319,5 +330,6 @@ Write-Host "Dev identity client ID:  $($deploymentOutputs.devIdentityClientId.va
 Write-Host "Prod identity client ID: $($deploymentOutputs.prodIdentityClientId.value)"
 if (-not $SkipGitHubConfiguration) {
     Write-Host "Production reviewer: $ProdReviewerLogin"
+    Write-Host 'GitHub Actions may create pull requests for APIOps extraction.'
     Write-Host 'Automatic releases remain disabled until ENABLE_AUTOMATIC_RELEASE is set to true.'
 }
