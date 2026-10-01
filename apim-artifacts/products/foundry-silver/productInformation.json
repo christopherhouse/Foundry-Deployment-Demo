@@ -1,10 +1,19 @@
 {
+  "id": "/subscriptions/8043efb5-d046-4aac-abcd-2c1a00e5ab86/resourceGroups/rg-foundrydeploydemo-dev/providers/Microsoft.ApiManagement/service/apim-foundrydeploydemo-dev-ch/products/foundry-silver",
+  "type": "Microsoft.ApiManagement/service/products",
+  "name": "foundry-silver",
   "properties": {
-    "approvalRequired": false,
-    "description": "Mid tier for the Microsoft Foundry API. Higher token rate limit and daily token quota than Bronze.",
     "displayName": "Foundry Silver",
-    "state": "published",
+    "description": "Mid tier for the Microsoft Foundry API. Higher token rate limit and daily token quota than Bronze.",
+    "terms": "For demonstration use only.",
     "subscriptionRequired": true,
-    "terms": "For demonstration use only."
+    "approvalRequired": false,
+    "subscriptionsLimit": null,
+    "state": "published",
+    "groups": [],
+    "authenticationType": [
+      "subscription-key"
+    ],
+    "application": null
   }
 }

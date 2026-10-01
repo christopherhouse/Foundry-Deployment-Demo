@@ -1,7 +1,11 @@
 {
+  "id": "/subscriptions/8043efb5-d046-4aac-abcd-2c1a00e5ab86/resourceGroups/rg-foundrydeploydemo-dev/providers/Microsoft.ApiManagement/service/apim-foundrydeploydemo-dev-ch/namedValues/entra-tenant-id",
+  "type": "Microsoft.ApiManagement/service/namedValues",
+  "name": "entra-tenant-id",
   "properties": {
     "displayName": "entra-tenant-id",
-    "secret": false,
-    "value": "cd48c7b8-9369-443d-8a4c-bd1e53504a09"
+    "value": "cd48c7b8-9369-443d-8a4c-bd1e53504a09",
+    "tags": null,
+    "secret": false
   }
 }
