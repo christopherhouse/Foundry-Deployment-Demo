@@ -124,7 +124,7 @@ $apiPolicy = az rest `
     --query properties.value `
     --output tsv
 
-if ($LASTEXITCODE -ne 0 -or $apiPolicy -notmatch '<validate-azure-ad-token') {
+if ($LASTEXITCODE -ne 0 -or -not ($apiPolicy -match '<validate-azure-ad-token')) {
     throw 'The Foundry API policy is missing Microsoft Entra token validation.'
 }
 
