@@ -72,7 +72,7 @@ jobs:
         run: ./scripts/Test-ApiOpsArtifacts.ps1
 
       - name: Upload extraction
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: apim-extraction-${{ inputs.environment }}-${{ github.run_id }}
           path: ./apim-artifacts
@@ -94,7 +94,7 @@ jobs:
         run: rm -rf ./apim-artifacts
 
       - name: Download extraction
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: apim-extraction-${{ inputs.environment }}-${{ github.run_id }}
           path: ./apim-artifacts
